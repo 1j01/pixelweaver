@@ -7,7 +7,7 @@ run
 		@y = 0
 		@z = 0
 		@angle = 0
-		@speed = 21
+		@speed = 5
 	
 	update: (delta)->
 		@angle += 45 * delta
@@ -29,7 +29,7 @@ run
 		gl.color(1, 0, 1); gl.vertex(point_x, point_y, base_z + 0.5)
 	
 	draw: (gl)->
-		# gl.rotate(-20, 1, 0, 0)
+		gl.rotate(-40, 1, 0, 0)
 		#gl.rotate(@angle, 0, 1, 0)
 		
 		gl.color(0.5, 0.5, 0.5)
