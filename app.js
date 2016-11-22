@@ -80,7 +80,7 @@ run = function(program) {
 	var simulate_to = function(new_t) {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		program.init()
-		for (t=0; t<=new_t; t+=INTERVAL) {
+		for (t = 0; t <= new_t; t += INTERVAL) {
 			gl.onupdate(INTERVAL)
 			gl.ondraw()
 			maybe_make_checkpoint()
@@ -91,18 +91,18 @@ run = function(program) {
 	var playing = false
 	var show_checkpoint = false
 	
-	var play = function(){
+	var play = function() {
 		playing = true
 		play_pause_icon.textContent = "pause"
 	}
-	var pause = function(){
+	var pause = function() {
 		playing = false
 		play_pause_icon.textContent = "play_arrow"
 	}
-	var play_pause = function(){
-		if(playing){
+	var play_pause = function() {
+		if (playing) {
 			pause()
-		}else{
+		} else {
 			play()
 		}
 	}
@@ -164,7 +164,7 @@ run = function(program) {
 	
 	play_pause_button.addEventListener("click", play_pause)
 	
-	export_button.onclick = function(){
+	export_button.onclick = function() {
 		// TODO: include JSON data in a tEXt chunk in the PNG containing
 		// the program's code, the animation position, the seed and any other inputs
 		export_button.href = canvas.toDataURL("image/png")
@@ -183,7 +183,7 @@ run = function(program) {
 			show_checkpoint = false
 			var new_t = parseFloat(slider.value)
 			simulate_to(new_t)
-			if(was_playing){
+			if (was_playing) {
 				play()
 			}
 		})
@@ -193,13 +193,13 @@ run = function(program) {
 		switch (e.keyCode) {
 			case 32:
 				play_pause()
-				break;
+				break
 			case 37:
-				seek_by(-1);
-				break;
+				seek_by(-1)
+				break
 			case 39:
-				seek_by(+1);
-				break;
+				seek_by(+1)
+				break
 		}
 	})
 }
