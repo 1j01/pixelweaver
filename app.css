@@ -1,0 +1,16 @@
+
+html {
+	padding: 0;
+	margin: 0;
+}
+
+header {
+	position: absolute;
+	z-index: 2;
+	top: 0;
+	width: 100%;
+	background: white;
+	padding: 10px 0;
+	filter: invert();
+	background: rgba(255, 255, 255, 0.8);
+}
