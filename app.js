@@ -1,6 +1,10 @@
 
 // FIXME: canvas is cleared when window is blurred (sometimes?)
 
+const png_chunks_extract = require("png-chunks-extract")
+const png_chunks_encode = require("png-chunks-encode")
+const png_chunk_text = require("png-chunk-text")
+
 run = function(program) {
 	var slider = document.getElementById("animation-position")
 	var container = document.getElementById("animation-container")
@@ -164,11 +168,52 @@ run = function(program) {
 	
 	play_pause_button.addEventListener("click", play_pause)
 	
-	export_button.onclick = function() {
-		// TODO: include JSON data in a tEXt chunk in the PNG containing
-		// the program's code, the animation position, the seed and any other inputs
-		export_button.href = canvas.toDataURL("image/png")
-	}
+	export_button.addEventListener("click", function() {
+		// console.log("export")
+		var a = document.createElement("a")
+		a.download = "export.png"
+		
+		var metadata = {
+			"Software": "ink-dangle", // TODO: version number (also a better name)
+			"Author": "Isaiah Odhner", // FIXME: hardcoded as me
+			"Creation Time": Date(),
+			"Program Source": JSON.stringify("TODO"), // TODO: include actual source code
+			"Program Inputs": JSON.stringify({
+				t: t
+				// TODO: seed, whatever else
+			}),
+			// "Comment": "Oh yeah"
+		}
+		console.log("including metadata", metadata)
+		
+		canvas.toBlob(function(blob) {
+			// console.log("blob", blob)
+			var file_reader = new FileReader
+			file_reader.onload = function() {
+				var array_buffer = this.result
+				// console.log("array_buffer", array_buffer)
+				var uint8_array = new Uint8Array(array_buffer)
+				// console.log("uint8_array", uint8_array)
+				var chunks = png_chunks_extract(uint8_array)
+				// console.log("chunks", chunks)
+				
+				for (var k in metadata){
+					chunks.splice(-1, 0, png_chunk_text.encode(k, metadata[k]))
+				}
+				// console.log("added chunks")
+				
+				var reencoded_buffer = png_chunks_encode(chunks)
+				// console.log("reencoded_buffer", reencoded_buffer)
+				var reencoded_blob = new Blob([reencoded_buffer], {type: "image/png"})
+				// console.log("reencoded_blob", reencoded_blob)
+				var blob_url = URL.createObjectURL(reencoded_blob)
+				console.log("blob_url", blob_url)
+				a.href = blob_url
+				a.click()
+			}
+			file_reader.readAsArrayBuffer(blob)
+		}, "image/png")
+	})
 	
 	// TODO: only when user actually starts scrubbing
 	slider.addEventListener("mousedown", function() {

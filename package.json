@@ -40,6 +40,7 @@
     "parallelshell": "^2.0.0",
     "png-chunk-text": "^1.0.0",
     "png-chunks-encode": "^1.0.0",
+    "png-chunks-extract": "^1.0.0",
     "seedrandom": "^2.4.2",
     "webpack": "^1.13.3"
   }
