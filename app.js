@@ -4,8 +4,12 @@
 run = function(program) {
 	var slider = document.getElementById("animation-position")
 	var container = document.getElementById("animation-container")
+	var export_button = document.querySelector("#export")
+	var play_pause_button = document.querySelector("#play-pause")
+	var play_pause_icon = document.querySelector("#play-pause .material-icons")
+	
 	componentHandler.upgradeElement(slider)
-
+	
 	var canvas = document.createElement("canvas")
 	var ctx = canvas.getContext("2d")
 	canvas.style.background = "#f0f"
@@ -86,9 +90,6 @@ run = function(program) {
 	var playing = false
 	var show_checkpoint = false
 	
-	var play_pause_button = document.querySelector("#play-pause")
-	var play_pause_icon = document.querySelector("#play-pause .material-icons")
-	
 	var play = function(){
 		playing = true
 		play_pause_icon.textContent = "pause"
@@ -104,8 +105,6 @@ run = function(program) {
 			play()
 		}
 	}
-	
-	play_pause_button.onclick = play_pause
 	
 	var animate = function() {
 		var post =
@@ -156,6 +155,14 @@ run = function(program) {
 	
 	animate()
 	play()
+	
+	play_pause_button.addEventListener("click", play_pause)
+	
+	export_button.onclick = function(){
+		// TODO: include JSON data in a tEXt chunk in the PNG containing
+		// the program's code, the animation position, the seed and any other inputs
+		export_button.href = canvas.toDataURL("image/png")
+	}
 	
 	// TODO: only when user actually starts scrubbing
 	slider.addEventListener("mousedown", function() {
