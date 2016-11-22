@@ -1,5 +1,4 @@
 
-// FIXME: first frame is shown as blank
 // FIXME: canvas is cleared when window is blurred (sometimes?)
 
 run = function(program) {
@@ -9,29 +8,19 @@ run = function(program) {
 
 	var canvas = document.createElement("canvas")
 	var ctx = canvas.getContext("2d")
-	// canvas.style.position = "absolute"
-	// canvas.style.left = 0
-	// canvas.style.top = 0
-	// canvas.style.zIndex = 1
 	canvas.style.background = "#f0f"
 	
 	var gl = GL.create({preserveDrawingBuffer: true})
 	container.appendChild(canvas)
-	// gl.fullscreen()
-	// gl.canvas.style.background = "red"
 	
 	gl.canvas.width = 1024
 	gl.canvas.height = 1024
-	// gl.canvas.width = window.innerWidth
-	// gl.canvas.height = window.innerHeight
 	
 	gl.enable(gl.DEPTH_TEST)
 	
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-	// gl.ortho(-50, 50, -50, 50, 0.1, 100)
 	gl.matrixMode(gl.PROJECTION)
 	gl.loadIdentity()
-	// gl.perspective(45, gl.canvas.width / gl.canvas.height, 0.1, 1000)
 	view_size = 5
 	gl.ortho(-view_size, view_size, -view_size, view_size, 0.1, 1000)
 	gl.matrixMode(gl.MODELVIEW)
@@ -87,7 +76,7 @@ run = function(program) {
 	var simulate_to = function(new_t) {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		program.init()
-		for (t=0; t<new_t; t+=INTERVAL) {
+		for (t=0; t<=new_t; t+=INTERVAL) {
 			gl.onupdate(INTERVAL)
 			gl.ondraw()
 			maybe_make_checkpoint()
@@ -121,7 +110,7 @@ run = function(program) {
 				t = new_t
 				var checkpoint = get_nearest_prior_checkpoint(t)
 				if (checkpoint) {
-					if (t > checkpoint.t + CHECKPOINT_INTERVAL) {
+					if (t > checkpoint.t + CHECKPOINT_INTERVAL + INTERVAL) {
 						simulate_to(t)
 						show_image = gl.canvas
 					}else{
