@@ -83,8 +83,30 @@ run = function(program) {
 		}
 	}
 	
-	var playing = true
+	var playing = false
 	var show_checkpoint = false
+	
+	var play_pause_button = document.querySelector("#play-pause")
+	var play_pause_icon = document.querySelector("#play-pause .material-icons")
+	
+	var play = function(){
+		playing = true
+		play_pause_icon.textContent = "pause"
+	}
+	var pause = function(){
+		playing = false
+		play_pause_icon.textContent = "play_arrow"
+	}
+	var play_pause = function(){
+		if(playing){
+			pause()
+		}else{
+			play()
+		}
+	}
+	
+	play_pause_button.onclick = play_pause
+	
 	var animate = function() {
 		var post =
 			window.requestAnimationFrame ||
@@ -133,9 +155,11 @@ run = function(program) {
 	program.init()
 	
 	animate()
+	play()
 	
+	// TODO: only when user actually starts scrubbing
 	slider.addEventListener("mousedown", function() {
-		playing = false
+		pause()
 		show_checkpoint = true
 		addEventListener("mouseup", function mouseup() {
 			removeEventListener("mouseup", mouseup)
@@ -150,7 +174,7 @@ run = function(program) {
 	
 	addEventListener("keydown", function(e) {
 		if (e.keyCode == 32) {
-			playing = !playing
+			play_pause()
 		}
 	})
 }
