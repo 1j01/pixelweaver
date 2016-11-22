@@ -7,7 +7,7 @@ run
 		@y = 0
 		@z = 0
 		@angle = 0
-		@speed = 0
+		@speed = 21
 	
 	update: (delta)->
 		@angle += 45 * delta
@@ -24,9 +24,9 @@ run
 		a_y = base_y + Math.cos(angle - Math.PI / 2) * base_width
 		b_x = base_x + Math.sin(angle + Math.PI / 2) * base_width
 		b_y = base_y + Math.cos(angle + Math.PI / 2) * base_width
-		gl.color(1, 1, 0); gl.vertex(a_x, a_y, 0)
-		gl.color(0, 1, 1); gl.vertex(b_x, b_y, 0)
-		gl.color(1, 0, 1); gl.vertex(point_x, point_y, 0.5)
+		gl.color(1, 1, 0); gl.vertex(a_x, a_y, base_z)
+		gl.color(0, 1, 1); gl.vertex(b_x, b_y, base_z)
+		gl.color(1, 0, 1); gl.vertex(point_x, point_y, base_z + 0.5)
 	
 	draw: (gl)->
 		# gl.rotate(-20, 1, 0, 0)
