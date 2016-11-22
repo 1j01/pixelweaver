@@ -29,4 +29,5 @@ body {
 	align-items: center;
 	justify-content: center;
 	background: #424242;
+	overflow: auto;
 }
