@@ -168,6 +168,56 @@ run = function(program) {
 	
 	play_pause_button.addEventListener("click", play_pause)
 	
+	var read_png_chunks_from_blob = function(blob, callback) {
+		var file_reader = new FileReader
+		file_reader.onload = function() {
+			var array_buffer = this.result
+			// console.log("array_buffer", array_buffer)
+			var uint8_array = new Uint8Array(array_buffer)
+			// console.log("uint8_array", uint8_array)
+			var chunks = png_chunks_extract(uint8_array)
+			// console.log("chunks", chunks)
+			callback(chunks)
+		}
+		file_reader.readAsArrayBuffer(blob)
+	}
+	
+	var inject_metadata = function(blob, metadata, callback) {
+		read_png_chunks_from_blob(blob, function(chunks) {
+			for (var k in metadata){
+				chunks.splice(-1, 0, png_chunk_text.encode(k, metadata[k]))
+			}
+			// console.log("added chunks")
+			
+			var reencoded_buffer = png_chunks_encode(chunks)
+			// console.log("reencoded_buffer", reencoded_buffer)
+			var reencoded_blob = new Blob([reencoded_buffer], {type: "image/png"})
+			// console.log("reencoded_blob", reencoded_blob)
+			callback(reencoded_blob)
+		})
+	}
+	
+	var read_metadata = function(blob, callback) {
+		read_png_chunks_from_blob(blob, function(chunks) {
+			console.log("chunks", chunks)
+			
+			var textChunks = chunks.filter(function(chunk) {
+				return chunk.name === "tEXt"
+			}).map(function(chunk) {
+				return png_chunk_text.decode(chunk.data)
+			})
+			
+			var metadata = {}
+			
+			for (var i = 0; i < textChunks.length; i++) {
+				var textChunk = textChunks[i]
+				metadata[textChunk.keyword] = textChunk.text
+			}
+			
+			callback(metadata)
+		})
+	}
+	
 	export_button.addEventListener("click", function() {
 		// console.log("export")
 		var a = document.createElement("a")
@@ -188,32 +238,37 @@ run = function(program) {
 		
 		canvas.toBlob(function(blob) {
 			// console.log("blob", blob)
-			var file_reader = new FileReader
-			file_reader.onload = function() {
-				var array_buffer = this.result
-				// console.log("array_buffer", array_buffer)
-				var uint8_array = new Uint8Array(array_buffer)
-				// console.log("uint8_array", uint8_array)
-				var chunks = png_chunks_extract(uint8_array)
-				// console.log("chunks", chunks)
-				
-				for (var k in metadata){
-					chunks.splice(-1, 0, png_chunk_text.encode(k, metadata[k]))
-				}
-				// console.log("added chunks")
-				
-				var reencoded_buffer = png_chunks_encode(chunks)
-				// console.log("reencoded_buffer", reencoded_buffer)
-				var reencoded_blob = new Blob([reencoded_buffer], {type: "image/png"})
-				// console.log("reencoded_blob", reencoded_blob)
+			inject_metadata(blob, metadata, function(reencoded_blob) {
 				var blob_url = URL.createObjectURL(reencoded_blob)
 				console.log("blob_url", blob_url)
 				a.href = blob_url
 				a.click()
-			}
-			file_reader.readAsArrayBuffer(blob)
+			})
 		}, "image/png")
 	})
+	
+	var handle_drop = function(e) {
+		e.stopPropagation()
+		e.preventDefault()
+		
+		var file = e.dataTransfer.files[0]
+		
+		if(file){
+			console.log(file)
+			read_metadata(file, function(metadata) {
+				console.log("metadata", metadata)
+			})
+		}
+	}
+	
+	var handle_drag_over = function(e) {
+		e.stopPropagation()
+		e.preventDefault()
+		e.dataTransfer.dropEffect = "copy"
+	}
+	
+	document.body.addEventListener("dragover", handle_drag_over, false)
+	document.body.addEventListener("drop", handle_drop, false)
 	
 	// TODO: only when user actually starts scrubbing
 	slider.addEventListener("mousedown", function() {
