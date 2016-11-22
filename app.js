@@ -85,6 +85,7 @@ run = function(program) {
 			gl.ondraw()
 			maybe_make_checkpoint()
 		}
+		// TODO: simulate progressively
 	}
 	
 	var playing = false
@@ -108,6 +109,7 @@ run = function(program) {
 	
 	var seek_by = function(delta) {
 		simulate_to(t + delta)
+		// TODO: show checkpoint within a period when going backwards
 	}
 	
 	var animate = function() {
@@ -170,6 +172,7 @@ run = function(program) {
 	
 	// TODO: only when user actually starts scrubbing
 	slider.addEventListener("mousedown", function() {
+		var was_playing = playing
 		pause()
 		show_checkpoint = true
 		addEventListener("mouseup", function mouseup() {
@@ -180,6 +183,9 @@ run = function(program) {
 			show_checkpoint = false
 			var new_t = parseFloat(slider.value)
 			simulate_to(new_t)
+			if(was_playing){
+				play()
+			}
 		})
 	})
 	
