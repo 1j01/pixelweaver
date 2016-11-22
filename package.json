@@ -30,7 +30,11 @@
   ],
   "scripts": {
     "build": "webpack app.js build/bundle.js --display-error-details",
-    "watch": "webpack app.js build/bundle.js --watch",
+    "watch": "webpack app.js build/bundle.js -d --watch --display-error-details",
+    "build-nope": "webpack --display-error-details",
+    "watch-nope": "webpack --watch --display-error-details",
+    "start-nope": "webpack-dev-server --content-base ./ --inline --progress --colors",
+    "dev": "parallelshell \"webpack app.js build/bundle.js -d --watch --display-error-details\" \"live-server\"",
     "build-ugh": "browserify app.js -o build/bundle.js",
     "watch-doesnt-work": "watchify app.js -o build/bundle.js --poll=100"
   },
@@ -38,10 +42,13 @@
     "browserify": "^13.1.1",
     "coffee-script": "^1.11.1",
     "litegl": "^0.1.0",
+    "live-server": "^1.1.0",
+    "parallelshell": "^2.0.0",
     "png-chunk-text": "^1.0.0",
     "png-chunks-encode": "^1.0.0",
     "seedrandom": "^2.4.2",
     "watchify": "^3.7.0",
-    "webpack": "^1.13.3"
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
   }
 }
