@@ -3,19 +3,14 @@ run
 	# STATE
 	
 	init: ->
-		#@angle = 0
 		@x = 0
 		@y = 0
 		@z = 0
-		#@vx = 1
-		#@vy = 1
 		@angle = 0
 		@speed = 0
 	
 	update: (delta)->
 		@angle += 45 * delta
-		#@x += @vx
-		#@y += @vy
 		@x += Math.sin(@angle) * @speed
 		@y += Math.cos(@angle) * @speed
 
@@ -34,10 +29,7 @@ run
 		gl.color(1, 0, 1); gl.vertex(point_x, point_y, 0.5)
 	
 	draw: (gl)->
-		#gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		gl.loadIdentity()
-		gl.translate(0, 0, -5)
-		gl.rotate(60, 1, 0, 0)
+		# gl.rotate(-20, 1, 0, 0)
 		#gl.rotate(@angle, 0, 1, 0)
 		
 		gl.color(0.5, 0.5, 0.5)

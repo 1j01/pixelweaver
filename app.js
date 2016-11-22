@@ -1,28 +1,40 @@
 
 // FIXME: first frame is shown as blank
 // FIXME: canvas is cleared when window is blurred (sometimes?)
-// FIXME: animation can continue with cleared canvas (i.e. from resize); should probably have a fixed canvas size
 
 run = function(program) {
 	var slider = document.getElementById("animation-position")
+	var container = document.getElementById("animation-container")
 	componentHandler.upgradeElement(slider)
 
 	var canvas = document.createElement("canvas")
 	var ctx = canvas.getContext("2d")
-	canvas.style.position = "absolute"
-	canvas.style.left = 0
-	canvas.style.top = 0
-	canvas.style.zIndex = 1
+	// canvas.style.position = "absolute"
+	// canvas.style.left = 0
+	// canvas.style.top = 0
+	// canvas.style.zIndex = 1
 	canvas.style.background = "#f0f"
 	
 	var gl = GL.create({preserveDrawingBuffer: true})
-	document.body.appendChild(canvas)
-	gl.fullscreen()
-	gl.canvas.style.background = "red"
+	container.appendChild(canvas)
+	// gl.fullscreen()
+	// gl.canvas.style.background = "red"
 	
-	gl.ortho(-50, 50, -50, 50, 0.1, 100)
+	gl.canvas.width = 1024
+	gl.canvas.height = 1024
+	// gl.canvas.width = window.innerWidth
+	// gl.canvas.height = window.innerHeight
 	
 	gl.enable(gl.DEPTH_TEST)
+	
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+	// gl.ortho(-50, 50, -50, 50, 0.1, 100)
+	gl.matrixMode(gl.PROJECTION)
+	gl.loadIdentity()
+	// gl.perspective(45, gl.canvas.width / gl.canvas.height, 0.1, 1000)
+	view_size = 5
+	gl.ortho(-view_size, view_size, -view_size, view_size, 0.1, 1000)
+	gl.matrixMode(gl.MODELVIEW)
 	
 	var t = 0
 	var INTERVAL = 0.01
@@ -31,6 +43,9 @@ run = function(program) {
 		program.update(delta)
 	}
 	gl.ondraw = function() {
+		gl.loadIdentity()
+		gl.translate(0, 0, -5)
+		gl.rotate(90, 1, 0, 0)
 		program.draw(gl)
 	}
 	
@@ -117,7 +132,6 @@ run = function(program) {
 				show_image = gl.canvas
 			}
 			if (show_image) {
-				// TODO: handle checkpoints with outdated size (maybe just use a fixed size canvas)
 				canvas.width = show_image.width
 				canvas.height = show_image.height
 				ctx.drawImage(show_image, 0, 0)
