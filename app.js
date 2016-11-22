@@ -106,6 +106,10 @@ run = function(program) {
 		}
 	}
 	
+	var seek_by = function(delta) {
+		simulate_to(t + delta)
+	}
+	
 	var animate = function() {
 		var post =
 			window.requestAnimationFrame ||
@@ -180,8 +184,16 @@ run = function(program) {
 	})
 	
 	addEventListener("keydown", function(e) {
-		if (e.keyCode == 32) {
-			play_pause()
+		switch (e.keyCode) {
+			case 32:
+				play_pause()
+				break;
+			case 37:
+				seek_by(-1);
+				break;
+			case 39:
+				seek_by(+1);
+				break;
 		}
 	})
 }
