@@ -172,11 +172,8 @@ run = function(program) {
 		var file_reader = new FileReader
 		file_reader.onload = function() {
 			var array_buffer = this.result
-			// console.log("array_buffer", array_buffer)
 			var uint8_array = new Uint8Array(array_buffer)
-			// console.log("uint8_array", uint8_array)
 			var chunks = png_chunks_extract(uint8_array)
-			// console.log("chunks", chunks)
 			callback(chunks)
 		}
 		file_reader.readAsArrayBuffer(blob)
@@ -187,19 +184,14 @@ run = function(program) {
 			for (var k in metadata){
 				chunks.splice(-1, 0, png_chunk_text.encode(k, metadata[k]))
 			}
-			// console.log("added chunks")
-			
 			var reencoded_buffer = png_chunks_encode(chunks)
-			// console.log("reencoded_buffer", reencoded_buffer)
 			var reencoded_blob = new Blob([reencoded_buffer], {type: "image/png"})
-			// console.log("reencoded_blob", reencoded_blob)
 			callback(reencoded_blob)
 		})
 	}
 	
 	var read_metadata = function(blob, callback) {
 		read_png_chunks_from_blob(blob, function(chunks) {
-			console.log("chunks", chunks)
 			
 			var textChunks = chunks.filter(function(chunk) {
 				return chunk.name === "tEXt"
@@ -219,7 +211,6 @@ run = function(program) {
 	}
 	
 	export_button.addEventListener("click", function() {
-		// console.log("export")
 		var a = document.createElement("a")
 		a.download = "export.png"
 		
@@ -229,18 +220,15 @@ run = function(program) {
 			"Creation Time": Date(),
 			"Program Source": JSON.stringify("TODO"), // TODO: include actual source code
 			"Program Inputs": JSON.stringify({
-				t: t
-				// TODO: seed, whatever else
-			}),
-			// "Comment": "Oh yeah"
+				t: t // TODO: include random seed and whatever else
+			})
 		}
-		console.log("including metadata", metadata)
+		console.log("Export PNG with metadata", metadata)
 		
 		canvas.toBlob(function(blob) {
-			// console.log("blob", blob)
 			inject_metadata(blob, metadata, function(reencoded_blob) {
 				var blob_url = URL.createObjectURL(reencoded_blob)
-				console.log("blob_url", blob_url)
+				console.log("Blob URL, in case a.click() doesn't work:", blob_url)
 				a.href = blob_url
 				a.click()
 			})
@@ -254,9 +242,8 @@ run = function(program) {
 		var file = e.dataTransfer.files[0]
 		
 		if(file){
-			console.log(file)
 			read_metadata(file, function(metadata) {
-				console.log("metadata", metadata)
+				console.log("Read metadata", metadata)
 			})
 		}
 	}
