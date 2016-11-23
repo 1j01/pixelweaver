@@ -47,7 +47,7 @@ gl.ondraw = function() {
 	if (program) {
 		gl.loadIdentity()
 		gl.translate(0, 0, -5)
-		gl.rotate(90, 1, 0, 0)
+		// gl.rotate(90, 1, 0, 0)
 		program.draw(gl)
 	}
 }

@@ -9,10 +9,12 @@ run
 		@y = 0
 		@z = 0
 		@angle = 0
-		@speed = 5
+		@speed = 0.01
+		@angular_speed = 0.4
+		@x -= @speed * 90 / @angular_speed
 	
 	update: (delta)->
-		@angle += 45 * delta
+		@angle += @angular_speed * delta
 		@x += Math.sin(@angle) * @speed
 		@y += Math.cos(@angle) * @speed
 
@@ -31,41 +33,41 @@ run
 		gl.color(1, 0, 1); gl.vertex(point_x, point_y, base_z + 0.5)
 	
 	draw: (gl)->
-		gl.rotate(-40, 1, 0, 0)
-		#gl.rotate(@angle, 0, 1, 0)
+		# gl.rotate(-90, 1, 0, 0)
+		# gl.rotate(@angle, 0, 1, 0)
 		
-		gl.color(0.5, 0.5, 0.5)
-		gl.lineWidth(1)
-		gl.begin(gl.LINES)
-		for i in [-10..10]
-			gl.vertex(i, 0, -10)
-			gl.vertex(i, 0, +10)
-			gl.vertex(-10, 0, i)
-			gl.vertex(+10, 0, i)
-		gl.end()
+		# gl.color(0.5, 0.5, 0.5)
+		# gl.lineWidth(1)
+		# gl.begin(gl.LINES)
+		# for i in [-10..10]
+		# 	gl.vertex(i, 0, -10)
+		# 	gl.vertex(i, 0, +10)
+		# 	gl.vertex(-10, 0, i)
+		# 	gl.vertex(+10, 0, i)
+		# gl.end()
 		
-		gl.rotate(@angle, 0, 1, 0)
+		# gl.rotate(@angle, 0, 1, 0)
 		
-		gl.pointSize(10)
-		gl.begin(gl.POINTS)
-		gl.color(1, 0, 0); gl.vertex(1, 0, 0)
-		gl.color(0, 1, 0); gl.vertex(0, 1, 0)
-		gl.color(0, 0, 1); gl.vertex(0, 0, 1)
-		gl.end()
-		
-		gl.lineWidth(2)
-		gl.begin(gl.LINE_LOOP)
-		gl.color(1, 0, 0); gl.vertex(1, 0, 0)
-		gl.color(0, 1, 0); gl.vertex(0, 1, 0)
-		gl.color(0, 0, 1); gl.vertex(0, 0, 1)
-		gl.end()
+		# gl.pointSize(10)
+		# gl.begin(gl.POINTS)
+		# gl.color(1, 0, 0); gl.vertex(1, 0, 0)
+		# gl.color(0, 1, 0); gl.vertex(0, 1, 0)
+		# gl.color(0, 0, 1); gl.vertex(0, 0, 1)
+		# gl.end()
+		# 
+		# gl.lineWidth(2)
+		# gl.begin(gl.LINE_LOOP)
+		# gl.color(1, 0, 0); gl.vertex(1, 0, 0)
+		# gl.color(0, 1, 0); gl.vertex(0, 1, 0)
+		# gl.color(0, 0, 1); gl.vertex(0, 0, 1)
+		# gl.end()
+		# 
+		# gl.begin(gl.TRIANGLES)
+		# gl.color(1, 1, 0); gl.vertex(0.5, 0.5, 0)
+		# gl.color(0, 1, 1); gl.vertex(0, 0.5, 0.5)
+		# gl.color(1, 0, 1); gl.vertex(0.5, 0, 0.5)
+		# gl.end()
 		
 		gl.begin(gl.TRIANGLES)
-		gl.color(1, 1, 0); gl.vertex(0.5, 0.5, 0)
-		gl.color(0, 1, 1); gl.vertex(0, 0.5, 0.5)
-		gl.color(1, 0, 1); gl.vertex(0.5, 0, 0.5)
-		gl.end()
-		
-		gl.begin(gl.TRIANGLES)
-		@tri(gl, @x, @y, @z, 2, 1, @angle)
+		@tri(gl, @x, @y, @z, 1, 2, @angle)
 		gl.end()
