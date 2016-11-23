@@ -218,13 +218,16 @@ run = function(program) {
 		
 		var metadata = {
 			"Software": "ink-dangle", // TODO: version number (also a better name)
-			"Author": "Isaiah Odhner", // FIXME: hardcoded as me
 			"Creation Time": new Date().toUTCString(),
 			"Program Source": program_source.replace(/\r\n/g, "\n"),
 			"Program Language": "CoffeeScript",
 			"Program Inputs": JSON.stringify({
 				t: t // TODO: include random seed and whatever else
 			})
+		}
+		var author_tag_match = program_source.match(/@author(?:: ?| )(.*)/)
+		if(author_tag_match){
+			metadata["Author"] = author_tag_match[1]
 		}
 		console.log("Export PNG with metadata", metadata)
 		
