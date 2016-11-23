@@ -40,11 +40,10 @@ gl.ortho(-view_size, view_size, -view_size, view_size, 0.1, 1000)
 gl.matrixMode(gl.MODELVIEW)
 
 var t = 0
-var INTERVAL = 0.01
-var CHECKPOINT_INTERVAL = 0.1
-gl.onupdate = function(delta) {
+var CHECKPOINT_INTERVAL = 10
+gl.onupdate = function() {
 	if (program) {
-		program.update(delta)
+		program.update()
 	}
 }
 gl.ondraw = function() {
@@ -116,8 +115,8 @@ var simulate_to = function(new_t) {
 	clear_screen()
 	if (program) {
 		init()
-		for (t = 0; t <= new_t; t += INTERVAL) {
-			gl.onupdate(INTERVAL)
+		for (t = 0; t <= new_t; t += 1) {
+			gl.onupdate()
 			gl.ondraw()
 			maybe_make_checkpoint()
 		}
@@ -158,11 +157,10 @@ var animate = function() {
 	
 	function update() {
 		if (playing) {
-			var delta = INTERVAL
-			t += delta
+			t += 1
 			slider.MaterialSlider.change(t)
 			
-			gl.onupdate(delta)
+			gl.onupdate()
 			gl.ondraw()
 			
 			maybe_make_checkpoint()
@@ -174,7 +172,7 @@ var animate = function() {
 			t = new_t
 			var checkpoint = get_nearest_prior_checkpoint(t)
 			if (checkpoint) {
-				if (t > checkpoint.t + CHECKPOINT_INTERVAL + INTERVAL) {
+				if (t > checkpoint.t + CHECKPOINT_INTERVAL + 1) {
 					simulate_to(t)
 					show_image = gl.canvas
 				}else{
@@ -330,10 +328,10 @@ addEventListener("keydown", function(e) {
 			play_pause()
 			break
 		case 37:
-			seek_by(-1)
+			seek_by(-100)
 			break
 		case 39:
-			seek_by(+1)
+			seek_by(+100)
 			break
 	}
 })

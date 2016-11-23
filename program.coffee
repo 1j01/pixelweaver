@@ -20,11 +20,11 @@ class Thing
 		@z = 0
 		@angle = 0
 		@speed = 0.01
-		@angular_speed = 0.4
-		@x -= @speed * 90 / @angular_speed
+		@angular_speed = 0.004
+		@x -= @speed / @angular_speed
 	
-	update: (delta)->
-		@angle += @angular_speed * delta
+	update: ->
+		@angle += @angular_speed
 		@x += Math.sin(@angle) * @speed
 		@y += Math.cos(@angle) * @speed
 	
@@ -37,8 +37,8 @@ run
 	init: ->
 		@things = [new Thing]
 	
-	update: (delta)->
-		thing.update(delta) for thing in @things
+	update: ->
+		thing.update() for thing in @things
 	
 	draw: (gl)->
 		# gl.begin(gl.TRIANGLES)
