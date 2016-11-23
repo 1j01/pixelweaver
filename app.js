@@ -5,6 +5,8 @@ const png_chunks_extract = require("png-chunks-extract")
 const png_chunks_encode = require("png-chunks-encode")
 const png_chunk_text = require("png-chunk-text")
 
+var program_source;
+
 run = function(program) {
 	var slider = document.getElementById("animation-position")
 	var container = document.getElementById("animation-container")
@@ -217,8 +219,9 @@ run = function(program) {
 		var metadata = {
 			"Software": "ink-dangle", // TODO: version number (also a better name)
 			"Author": "Isaiah Odhner", // FIXME: hardcoded as me
-			"Creation Time": Date(),
-			"Program Source": JSON.stringify("TODO"), // TODO: include actual source code
+			"Creation Time": new Date().toUTCString(),
+			"Program Source": program_source.replace(/\r\n/g, "\n"),
+			"Program Language": "CoffeeScript",
 			"Program Inputs": JSON.stringify({
 				t: t // TODO: include random seed and whatever else
 			})
@@ -289,4 +292,14 @@ run = function(program) {
 				break
 		}
 	})
+	
 }
+
+fetch("program.coffee").then(function(response) {
+	return response.text().then(function(text) {
+		program_source = text
+		CoffeeScript.eval(program_source)
+	})
+}).catch(function(err) {
+	console.error(err)
+})
