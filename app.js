@@ -4,9 +4,13 @@
 const png_chunks_extract = require("png-chunks-extract")
 const png_chunks_encode = require("png-chunks-encode")
 const png_chunk_text = require("png-chunk-text")
+const seed_random = require("seedrandom")
 
-var program;
-var program_source;
+var program
+var program_source
+
+var seed_gen = seed_random("gimme a seed", {entropy: true})
+var seed = seed_gen()
 
 var slider = document.getElementById("animation-position")
 var container = document.getElementById("animation-container")
@@ -96,17 +100,22 @@ var clear_screen = function() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
-reset = function() {
+var reset = function() {
 	clear_checkpoints()
 	clear_screen()
 	t = 0
 	slider.MaterialSlider.change(t)
 }
 
+var init = function() {
+	seed_random(seed, {global: true})
+	program.init()
+}
+
 var simulate_to = function(new_t) {
 	clear_screen()
 	if (program) {
-		program.init()
+		init()
 		for (t = 0; t <= new_t; t += INTERVAL) {
 			gl.onupdate(INTERVAL)
 			gl.ondraw()
@@ -241,11 +250,13 @@ export_button.addEventListener("click", function() {
 		"Program Source": program_source.replace(/\r\n/g, "\n"),
 		"Program Language": "text/coffeescript",
 		"Program Inputs": JSON.stringify({
-			t: t // TODO: include random seed and whatever else
+			t: t,
+			seed: seed,
+			// TODO: include viewport/projection, and maybe custom inputs
 		})
 	}
 	var author_tag_match = program_source.match(/@author(?:: ?| )(.*)/)
-	if(author_tag_match){
+	if (author_tag_match) {
 		metadata["Author"] = author_tag_match[1]
 	}
 	console.log("Export PNG with metadata", metadata)
@@ -266,11 +277,15 @@ var handle_drop = function(e) {
 	
 	var file = e.dataTransfer.files[0]
 	
-	if(file){
+	if (file) {
 		read_metadata(file, function(metadata) {
 			console.log("Load program from metadata", metadata)
 			inputs = JSON.parse(metadata["Program Inputs"])
 			source = metadata["Program Source"]
+			
+			if (inputs.seed) {
+				seed = inputs.seed
+			}
 			
 			// TODO: sandbox
 			run_program_from_source(source)
@@ -326,7 +341,7 @@ addEventListener("keydown", function(e) {
 run = function(_program) {
 	
 	program = _program
-	program.init()
+	init()
 	play()
 	
 }
