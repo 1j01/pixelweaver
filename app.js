@@ -250,7 +250,7 @@ export_button.addEventListener("click", function() {
 		"Program Inputs": JSON.stringify({
 			t: t,
 			seed: seed,
-			// TODO: include viewport/projection, and maybe custom inputs
+			// TODO: include viewport/projection, background color, and maybe custom inputs
 		})
 	}
 	var author_tag_match = program_source.match(/@author(?:: ?| )(.*)/)
