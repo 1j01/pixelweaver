@@ -220,7 +220,7 @@ run = function(program) {
 			"Software": "ink-dangle", // TODO: version number (also a better name)
 			"Creation Time": new Date().toUTCString(),
 			"Program Source": program_source.replace(/\r\n/g, "\n"),
-			"Program Language": "CoffeeScript",
+			"Program Language": "text/coffeescript",
 			"Program Inputs": JSON.stringify({
 				t: t // TODO: include random seed and whatever else
 			})
