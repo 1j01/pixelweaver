@@ -47,7 +47,7 @@ class Thing
 		@life -= 0.04 * Math.random()
 		@t += Math.random()
 		@angular_speed += (Math.random() - 0.5) / 50
-		@angular_speed *= 0.999
+		@angular_speed *= 0.99
 		@angle += @angular_speed
 		prev_x = @x
 		prev_y = @y
@@ -93,6 +93,7 @@ run
 				@things.push(new Thing(thing_b))
 				thing.life = 0
 			if Math.random() < 0.1 and 3 > thing.life > 0.2
+			# if ??? and 3 > thing.life > 0.2
 				new_thing = new Thing(thing)
 				# new_thing.life -= 1
 				new_thing.life *= 0.8

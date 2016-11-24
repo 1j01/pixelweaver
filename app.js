@@ -15,6 +15,7 @@ var seed = seed_gen()
 var slider = document.getElementById("animation-position")
 var container = document.getElementById("animation-container")
 var export_button = document.querySelector("#export")
+var reseed_button = document.querySelector("#reseed")
 var play_pause_button = document.querySelector("#play-pause")
 var play_pause_icon = document.querySelector("#play-pause .material-icons")
 
@@ -50,7 +51,6 @@ gl.ondraw = function() {
 	if (program) {
 		gl.loadIdentity()
 		gl.translate(0, 0, -5)
-		// gl.rotate(90, 1, 0, 0)
 		program.draw(gl)
 	}
 }
@@ -145,7 +145,7 @@ var play_pause = function() {
 
 var seek_by = function(delta) {
 	simulate_to(t + delta)
-	// TODO: show checkpoint within a period when going backwards
+	// TODO: show checkpoint within a period of time if any exist around t + delta
 }
 
 var animate = function() {
@@ -267,6 +267,12 @@ export_button.addEventListener("click", function() {
 			a.click()
 		})
 	}, "image/png")
+})
+
+reseed_button.addEventListener("click", function() {
+	reset()
+	seed = seed_gen()
+	init()
 })
 
 var handle_drop = function(e) {
