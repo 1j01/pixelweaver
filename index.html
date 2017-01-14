@@ -15,7 +15,14 @@
 	<body class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 		<header class="mdl-layout__header">
 			<div class="mdl-layout__header-row">
-				<button id="play-pause" class="mdl-button mdl-js-button mdl-button--icon mdl-button--primary"><i class="material-icons">play_arrow</i></button>
+				<button id="play-pause" class="mdl-button mdl-js-button mdl-button--icon mdl-button--primary">
+					<div class="play-pause-icon">
+						<div class="left"></div>
+						<div class="right"></div>
+						<div class="triangle-1"></div>
+						<div class="triangle-2"></div>
+					</div>
+				</button>
 				<input id="animation-position" class="mdl-slider mdl-js-slider" type="range" min="0" max="1000" value="0" tabindex="0">
 				<button id="reseed" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons">casino</i> Reseed</button>
 				<button id="export" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons">photo</i> Export</button>

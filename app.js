@@ -17,7 +17,6 @@ var container = document.getElementById("animation-container")
 var export_button = document.querySelector("#export")
 var reseed_button = document.querySelector("#reseed")
 var play_pause_button = document.querySelector("#play-pause")
-var play_pause_icon = document.querySelector("#play-pause .material-icons")
 
 componentHandler.upgradeElement(slider)
 
@@ -129,11 +128,11 @@ var show_checkpoint = false
 
 var play = function() {
 	playing = true
-	play_pause_icon.textContent = "pause"
+	play_pause_button.classList.remove("paused")
 }
 var pause = function() {
 	playing = false
-	play_pause_icon.textContent = "play_arrow"
+	play_pause_button.classList.add("paused")
 }
 var play_pause = function() {
 	if (playing) {

@@ -31,3 +31,69 @@ body {
 	background: #424242;
 	overflow: auto;
 }
+
+.play-pause-icon {
+	zoom: 0.06;
+	height: 300px;
+	width: 300px;
+	display: block;
+	margin: 60px auto;
+	overflow: hidden;
+	position: relative;
+}
+.left {
+	height: 100%;
+	float: left;
+	background-color: currentColor;
+	width: 36%;
+	-webkit-transition: all 0.25s ease;
+	transition: all 0.25s ease;
+	overflow: hidden;
+}
+.triangle-1 {
+	-webkit-transform: translate(0, -100%);
+	transform: translate(0, -100%);
+}
+.triangle-2 {
+	-webkit-transform: translate(0, 100%);
+	transform: translate(0, 100%);
+}
+.triangle-1,
+.triangle-2 {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: transparent;
+	width: 0;
+	height: 0;
+	border-right: 300px solid white;
+	border-top: 150px solid transparent;
+	border-bottom: 150px solid transparent;
+	-webkit-transition: -webkit-transform 0.25s ease;
+	transition: -webkit-transform 0.25s ease;
+	transition: transform 0.25s ease;
+	transition: transform 0.25s ease, -webkit-transform 0.25s ease;
+}
+.right {
+	height: 100%;
+	float: right;
+	width: 36%;
+	background-color: currentColor;
+	-webkit-transition: all 0.25s ease;
+	transition: all 0.25s ease;
+}
+.paused .left {
+	width: 50%;
+}
+.paused .right {
+	width: 50%;
+}
+.paused .triangle-1 {
+	-webkit-transform: translate(0, -50%);
+	transform: translate(0, -50%);
+}
+.paused .triangle-2 {
+	-webkit-transform: translate(0, 50%);
+	transform: translate(0, 50%);
+}
+
