@@ -113,16 +113,10 @@ var reset_to_start = function() {
 	slider.MaterialSlider.change(t)
 }
 
-// XXX: can get rid of this function
-// and the `program_source = source` from init_program_from source
-var re_init = function() {
-	init_program_from_source(program_source)
-}
-
 var simulate_to = function(new_t) {
 	clear_screen()
 	if (program_source) {
-		re_init()
+		init_program()
 		for (t = 0; t <= new_t; t += 1) {
 			gl.onupdate()
 			gl.ondraw()
@@ -282,7 +276,7 @@ reseed_button.addEventListener("click", function() {
 	reset_to_start()
 	seed = seed_gen()
 	if (program_source) {
-		re_init()
+		init_program()
 	}
 })
 
@@ -380,18 +374,20 @@ addEventListener("keydown", function(e) {
 	}
 })
 
-init_program_from_source = function(source) {
+var init_program = function() {
 	seed_random(seed, {global: true})
-	program_source = source
 	console.log("eval")
-	// CoffeeScript.eval(program_source)
+	// NOTE: not using CoffeeScript.eval(program_source)
+	// so that the context is the global window
+	// hm, I wonder if I can use CoffeeScript.eval.call instead
 	js = CoffeeScript.compile(program_source)
 	eval(js)
 }
 
-run_program_from_source = function(source) {
+var run_program_from_source = function(source) {
 	reset_to_start()
-	init_program_from_source(source)
+	program_source = source
+	init_program()
 	play()
 }
 
