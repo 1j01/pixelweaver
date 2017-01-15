@@ -5,6 +5,10 @@ const png_chunks_extract = require("png-chunks-extract")
 const png_chunks_encode = require("png-chunks-encode")
 const png_chunk_text = require("png-chunk-text")
 const seed_random = require("seedrandom")
+const semver = require("semver")
+
+const API_VERSION = "0.1.0"
+const API_VERSION_RANGE = "~" + semver.major(API_VERSION) + "." + semver.minor(API_VERSION)
 
 var program_source
 
@@ -27,15 +31,19 @@ canvas.style.background = "#f0f"
 var gl = GL.create({preserveDrawingBuffer: true})
 container.appendChild(canvas)
 
+// FIXME: bits implicitly part of the API surface
 gl.canvas.width = 1024
 gl.canvas.height = 1024
+
+// FIXME: bits implicitly part of the API surface
+var view_size = 5
+var view_z = -5
 
 gl.enable(gl.DEPTH_TEST)
 
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 gl.matrixMode(gl.PROJECTION)
 gl.loadIdentity()
-view_size = 5
 gl.ortho(-view_size, view_size, -view_size, view_size, 0.1, 1000)
 gl.matrixMode(gl.MODELVIEW)
 
@@ -49,7 +57,7 @@ gl.onupdate = function() {
 gl.ondraw = function() {
 	if (window.draw) {
 		gl.loadIdentity()
-		gl.translate(0, 0, -5)
+		gl.translate(0, 0, view_z)
 		window.draw(gl)
 	}
 }
@@ -241,7 +249,8 @@ export_button.addEventListener("click", function() {
 	a.download = "export.png"
 	
 	var metadata = {
-		"Software": "ink-dangle", // TODO: version number (also a better name)
+		"Software": "ink-dangle", // TODO: a better name
+		"API Version": API_VERSION,
 		"Creation Time": new Date().toUTCString(),
 		"Program Source": program_source.replace(/\r\n/g, "\n"),
 		"Program Language": "text/coffeescript",
@@ -284,8 +293,35 @@ var handle_drop = function(e) {
 	if (file) {
 		read_metadata(file, function(metadata) {
 			console.log("Load program from metadata", metadata)
-			inputs = JSON.parse(metadata["Program Inputs"])
-			source = metadata["Program Source"]
+			
+			// XXX: avoiding program_source variable name used above
+			var source = metadata["Program Source"]
+			var api_version = metadata["API Version"]
+			
+			if (!source) {
+				alert("This PNG does not contain program source code")
+				return
+			} else if (!api_version) {
+				alert("This PNG does not specify an API version")
+				return
+			} else if (!semver.valid(api_version)) {
+				alert("This PNG specifies an invalid API version (" + api_version + ")")
+				return
+			} else if (semver.satisfies(api_version, API_VERSION_RANGE)) {
+				
+			} else if (semver.lt(api_version, API_VERSION)) {
+				if(!confirm("This program uses an earlier version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
+					return
+				}
+			} else if (semver.gt(api_version, API_VERSION)) {
+				if(!confirm("This program uses a later version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
+					return
+				}
+			} else {
+				alert("This program's API version (" + api_version + ") is valid but doesn't satisfy the current API version ^(" + API_VERSION + ") but also isn't greater than or less than it, which doesn't make any sense")
+				return
+			}
+			var inputs = JSON.parse(metadata["Program Inputs"])
 			
 			if (inputs.seed) {
 				seed = inputs.seed

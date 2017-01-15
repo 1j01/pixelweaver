@@ -40,9 +40,6 @@ The API is not defined yet. Currently there's an arbitrary and kind of ridiculou
 I think it makes more sense as an "input" to the program.
 Might even let you zoom around with the UI, previewing the change by scaling/translating the output of the program before simulating back up to that point.
 Also I should probably have a flag for whether a program uses immediate mode or not, and maybe whether it uses timestamps vs fixed steps.
-As well as whatever else for future compatibility.
-Feature tags?
-The API should be versioned at least.
 
 
 It uses [lightgl.js][] for the drawing API, in immediate mode.
@@ -57,6 +54,7 @@ but I could provide `every` and `after` helpers.
 (`setTimeout` and `setInterval` are terrible names btw)
 
 Don't use global variables either, except for `draw` and `update`.
+
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
 [retained mode]: https://en.wikipedia.org/wiki/Retained_mode
