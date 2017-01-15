@@ -70,42 +70,41 @@ class Thing
 		segment(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		gl.end()
 
-run
-	init: ->
-		@things = [new Thing(y: -4)]
+
+things = [new Thing(y: -4)]
+
+@update = ->
+	thing.update() for thing in things
 	
-	update: ->
-		thing.update() for thing in @things
-		
-		for thing in @things
-			# if Math.random() < 0.1 and thing.life > 0.2
-			if thing.t * 10 > thing.life ** 4 and thing.life > 2
-				thing.life /= 2
-				thing_a = new Thing(thing)
-				thing_b = new Thing(thing)
-				thing_a.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-				thing_a.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-				thing_b.x += Math.sin(thing.angle + Math.PI / 2) * thing.life * 0.1
-				thing_b.y += Math.cos(thing.angle + Math.PI / 2) * thing.life * 0.1
-				thing_a.angular_speed -= (Math.random() - 0.2) / 15
-				thing_b.angular_speed += (Math.random() - 0.2) / 15
-				@things.push(new Thing(thing_a))
-				@things.push(new Thing(thing_b))
-				thing.life = 0
-			if Math.random() < 0.1 and 3 > thing.life > 0.2
-			# if ??? and 3 > thing.life > 0.2
-				new_thing = new Thing(thing)
-				# new_thing.life -= 1
-				new_thing.life *= 0.8
-				# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-				# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-				new_thing.angle = thing.angle + (Math.random() - 0.5)
-				new_thing.angular_speed = (Math.random() - 0.5) / 15
-				@things.push(new Thing(new_thing))
-	
-	draw: (gl)->
-		# gl.rotate(-30, 1, 0, 0)
-		# gl.begin(gl.TRIANGLES)
-		# tri(gl, 0, 0, 0, 1, 2, 20)
-		# gl.end()
-		thing.draw(gl) for thing in @things
+	for thing in things
+		# if Math.random() < 0.1 and thing.life > 0.2
+		if thing.t * 10 > thing.life ** 4 and thing.life > 2
+			thing.life /= 2
+			thing_a = new Thing(thing)
+			thing_b = new Thing(thing)
+			thing_a.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
+			thing_a.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
+			thing_b.x += Math.sin(thing.angle + Math.PI / 2) * thing.life * 0.1
+			thing_b.y += Math.cos(thing.angle + Math.PI / 2) * thing.life * 0.1
+			thing_a.angular_speed -= (Math.random() - 0.2) / 15
+			thing_b.angular_speed += (Math.random() - 0.2) / 15
+			things.push(new Thing(thing_a))
+			things.push(new Thing(thing_b))
+			thing.life = 0
+		if Math.random() < 0.1 and 3 > thing.life > 0.2
+		# if ??? and 3 > thing.life > 0.2
+			new_thing = new Thing(thing)
+			# new_thing.life -= 1
+			new_thing.life *= 0.8
+			# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
+			# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
+			new_thing.angle = thing.angle + (Math.random() - 0.5)
+			new_thing.angular_speed = (Math.random() - 0.5) / 15
+			things.push(new Thing(new_thing))
+
+@draw = (gl)->
+	# gl.rotate(-30, 1, 0, 0)
+	# gl.begin(gl.TRIANGLES)
+	# tri(gl, 0, 0, 0, 1, 2, 20)
+	# gl.end()
+	thing.draw(gl) for thing in things

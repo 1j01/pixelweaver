@@ -24,7 +24,7 @@ like Title and Description that could be included with tags as well.
 
 You can drag an exported file back onto the app to load up the program.
 Note that this is totally **unsandboxed** for now,
-and there isn't a reasonable way to preview a program before running it.
+and there isn't a reasonable way to preview a program's code before running it.
 
 ## Usage
 
@@ -56,17 +56,7 @@ I should probably prevent access to these,
 but I could provide `every` and `after` helpers.
 (`setTimeout` and `setInterval` are terrible names btw)
 
-Currently your `init` function needs to reset the state completely.
-Obviously you shouldn't use global variables, but you also shouldn't do crazy stuff like
-
-```coffee
-init: ->
-	@a ?= 5
-	if @b then @b = 2 else @b = 5
-```
-
-I should probably make it so that the whole source code is reevaluated though. 
-
+Don't use global variables either, except for `draw` and `update`.
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
 [retained mode]: https://en.wikipedia.org/wiki/Retained_mode

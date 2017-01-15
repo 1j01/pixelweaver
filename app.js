@@ -6,7 +6,6 @@ const png_chunks_encode = require("png-chunks-encode")
 const png_chunk_text = require("png-chunk-text")
 const seed_random = require("seedrandom")
 
-var program
 var program_source
 
 var seed_gen = seed_random("gimme a seed", {entropy: true})
@@ -43,15 +42,15 @@ gl.matrixMode(gl.MODELVIEW)
 var t = 0
 var CHECKPOINT_INTERVAL = 10
 gl.onupdate = function() {
-	if (program) {
-		program.update()
+	if (window.update) {
+		window.update()
 	}
 }
 gl.ondraw = function() {
-	if (program) {
+	if (window.draw) {
 		gl.loadIdentity()
 		gl.translate(0, 0, -5)
-		program.draw(gl)
+		window.draw(gl)
 	}
 }
 
@@ -99,22 +98,21 @@ var clear_screen = function() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
-var reset = function() {
+var reset_to_start = function() {
 	clear_checkpoints()
 	clear_screen()
 	t = 0
 	slider.MaterialSlider.change(t)
 }
 
-var init = function() {
-	seed_random(seed, {global: true})
-	program.init()
+var re_init = function() {
+	init_program_from_source(program_source)
 }
 
 var simulate_to = function(new_t) {
 	clear_screen()
-	if (program) {
-		init()
+	if (program_source) {
+		re_init()
 		for (t = 0; t <= new_t; t += 1) {
 			gl.onupdate()
 			gl.ondraw()
@@ -270,9 +268,11 @@ export_button.addEventListener("click", function() {
 })
 
 reseed_button.addEventListener("click", function() {
-	reset()
+	reset_to_start()
 	seed = seed_gen()
-	init()
+	if (program_source) {
+		re_init()
+	}
 })
 
 var handle_drop = function(e) {
@@ -342,20 +342,18 @@ addEventListener("keydown", function(e) {
 	}
 })
 
-run = function(_program) {
-	
-	program = _program
-	init()
-	play()
-	
+init_program_from_source = function(source) {
+	reset_to_start()
+	seed_random(seed, {global: true})
+	program_source = source
+	console.log("eval")
+	// CoffeeScript.eval(program_source)
+	js = CoffeeScript.compile(program_source)
+	eval(js)
 }
 
 run_program_from_source = function(source) {
-	reset()
-	
-	program_source = source
-	CoffeeScript.eval(program_source)
-	
+	init_program_from_source(source)
 	play()
 }
 
