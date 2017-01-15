@@ -376,12 +376,7 @@ addEventListener("keydown", function(e) {
 
 var init_program = function() {
 	seed_random(seed, {global: true})
-	console.log("eval")
-	// NOTE: not using CoffeeScript.eval(program_source)
-	// so that the context is the global window
-	// hm, I wonder if I can use CoffeeScript.eval.call instead
-	js = CoffeeScript.compile(program_source)
-	eval(js)
+	CoffeeScript.eval.call(window, program_source)
 }
 
 var run_program_from_source = function(source) {
