@@ -113,6 +113,8 @@ var reset_to_start = function() {
 	slider.MaterialSlider.change(t)
 }
 
+// XXX: can get rid of this function
+// and the `program_source = source` from init_program_from source
 var re_init = function() {
 	init_program_from_source(program_source)
 }
@@ -379,7 +381,6 @@ addEventListener("keydown", function(e) {
 })
 
 init_program_from_source = function(source) {
-	reset_to_start()
 	seed_random(seed, {global: true})
 	program_source = source
 	console.log("eval")
@@ -389,6 +390,7 @@ init_program_from_source = function(source) {
 }
 
 run_program_from_source = function(source) {
+	reset_to_start()
 	init_program_from_source(source)
 	play()
 }
