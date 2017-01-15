@@ -1,27 +1,30 @@
 
 # Ink Dangle
 
-Ink Dangle (working title) is a reproducible procedural drawing tool
+Ink Dangle *(working title)* is a reproducible procedural drawing tool
 focused around an [immediate mode][] drawing paradigm on a 3D canvas
-in contrast to the usual 3D [retained mode][], often with a [scene graph][]
+in contrast to the usual [retained mode][] for 3D, such as with a [scene graph][].
 
 The name Ink Dangle comes from a specific vision I have for what I want to do with this,
-making 2D patterns by brushing at different depths on a 3D canvas,
+making 2D patterns by brushing ink in at different depths on a 3D canvas,
 but it could be expanded to allow for [retained mode][] 3D as well,
 maybe even VR.
 
 The app lets you scrub through an animation,
-showing snapshots of the canvas before simulating up to that point when you release.
+simulating up to that point when you release.
 
 When you take a screenshot with the Export button,
-it embeds all the metadata required to reproduce it,
+it embeds all the metadata required to reproduce the state,
 including the entire source code for the program,
-the position in the animation, the random seed, and any other inputs
-(as well as the author if specified via an `@author` tag in the source).
+the position in the animation, the random seed, and any other inputs.
+It'll also include the time of the snapshot as the Creation Time,
+and the Author if specified via an `@author` tag in the source.
+There are a few other [standard metadata keywords][]
+like Title and Description that could be included with tags as well.
 
 You can drag an exported file back onto the app to load up the program.
 Note that this is totally **unsandboxed** for now,
-and there isn't a reasonable way to preview the program before running.
+and there isn't a reasonable way to preview a program before running it.
 
 ## Usage
 
@@ -69,3 +72,4 @@ I should probably make it so that the whole source code is reevaluated though.
 [retained mode]: https://en.wikipedia.org/wiki/Retained_mode
 [scene graph]: https://en.wikipedia.org/wiki/Scene_graph
 [lightgl.js]: https://github.com/evanw/lightgl.js/
+[standard metadata keywords]: https://www.w3.org/TR/PNG-Chunks.html#C.Summary-of-standard-chunks
