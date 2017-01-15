@@ -36,13 +36,19 @@ and then you can open a terminal/command prompt and run `npm install` and `npm r
 
 ## API
 
-The API is not defined yet. Currently there's an arbitrary and kind of ridiculous viewport that's implicitly part of the API surface.
-I think it makes more sense as an "input" to the program.
-Might even let you zoom around with the UI, previewing the change by scaling/translating the output of the program before simulating back up to that point.
-Also I should probably have a flag for whether a program uses immediate mode or not, and maybe whether it uses timestamps vs fixed steps.
+The API is not well defined yet.
+Currently there's an arbitrary and kind of ridiculous viewport that's implicitly part of the API surface.
+It should make more sense as an "input" to the program.
+Might even let you zoom around with the UI,
+previewing the change by scaling/translating the output of the program
+before simulating back up to that point.
+Also I should probably have a flag for whether a program uses immediate mode or not,
+and maybe whether it uses a fixed or variable timestep.
 
+At the top level, you can do initialization and provide `@draw` and `@update`.
 
 It uses [lightgl.js][] for the drawing API, in immediate mode.
+`@draw` is passed the `gl` object.
 
 There are no requirements that a program's state be JSON-serializable.
 You can even update state in `draw` if you want, but that should generally be done in `update`.
@@ -53,7 +59,7 @@ I should probably prevent access to these,
 but I could provide `every` and `after` helpers.
 (`setTimeout` and `setInterval` are terrible names btw)
 
-Don't use global variables either, except for `draw` and `update`.
+Don't use global variables either.
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)

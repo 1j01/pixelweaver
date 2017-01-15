@@ -7,10 +7,11 @@ const png_chunk_text = require("png-chunk-text")
 const seed_random = require("seedrandom")
 const semver = require("semver")
 
-const API_VERSION = "0.1.0"
+const API_VERSION = "0.1.1"
 const API_VERSION_RANGE = "~" + semver.major(API_VERSION) + "." + semver.minor(API_VERSION)
 
 var program_source
+var program_context
 
 var seed_gen = seed_random("gimme a seed", {entropy: true})
 var seed = seed_gen()
@@ -50,15 +51,15 @@ gl.matrixMode(gl.MODELVIEW)
 var t = 0
 var CHECKPOINT_INTERVAL = 10
 gl.onupdate = function() {
-	if (window.update) {
-		window.update()
+	if (program_context && program_context.update) {
+		program_context.update()
 	}
 }
 gl.ondraw = function() {
-	if (window.draw) {
+	if (program_context && program_context.draw) {
 		gl.loadIdentity()
 		gl.translate(0, 0, view_z)
-		window.draw(gl)
+		program_context.draw(gl)
 	}
 }
 
@@ -376,7 +377,8 @@ addEventListener("keydown", function(e) {
 
 var init_program = function() {
 	seed_random(seed, {global: true})
-	CoffeeScript.eval.call(window, program_source)
+	program_context = {}
+	CoffeeScript.eval.call(program_context, program_source)
 }
 
 var run_program_from_source = function(source) {
