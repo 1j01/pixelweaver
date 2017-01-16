@@ -22,13 +22,14 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 	a_2_y = base_y + Math.cos(angle - Math.PI / 2) * width + Math.cos(angle) * length
 	b_2_x = base_x + Math.sin(angle + Math.PI / 2) * width + Math.sin(angle) * length
 	b_2_y = base_y + Math.cos(angle + Math.PI / 2) * width + Math.cos(angle) * length
-	gl.color(0.7, 0.3, 0)
+	# gl.color(0.7, 0.3, 0)
 	gl.vertex(a_1_x, a_1_y, base_z)
 	gl.vertex(b_1_x, b_1_y, base_z)
 	gl.vertex(a_2_x, a_2_y, base_z + 0.1)
 	gl.vertex(a_2_x, a_2_y, base_z)
 	gl.vertex(b_2_x, b_2_y, base_z)
-	gl.color(1, 0.5, 0.1); gl.vertex(b_1_x, b_1_y, base_z + 0.5)
+	# gl.color(1, 0.5, 0.1)
+	gl.vertex(b_1_x, b_1_y, base_z + 0.5)
 
 class Thing
 	constructor: (props={})->
@@ -69,6 +70,9 @@ class Thing
 		# tri(gl, @x, @y, @z, 0.1 * Math.random(), 0.1 + 0.1 * Math.random(), @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle + Math.PI)
+		gl.color(0, 0, 0, 1)
+		segment(gl, @x, @y, @z, 0.11 * @life, 0.1, @angle)
+		gl.color(1, 1, 1, 1)
 		segment(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		gl.end()
 
@@ -104,7 +108,12 @@ things = [new Thing(y: -4)]
 			new_thing.angular_speed = (Math.random() - 0.5) / 15
 			things.push(new Thing(new_thing))
 
+t = 0
 @draw = (gl)->
+	if t++ is 0
+		gl.clearColor(0.9, 0.9, 0.9, 1)
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	
 	# gl.rotate(-30, 1, 0, 0)
 	# gl.begin(gl.TRIANGLES)
 	# tri(gl, 0, 0, 0, 1, 2, 20)
