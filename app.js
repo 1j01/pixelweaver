@@ -1,6 +1,4 @@
 
-// FIXME: canvas is cleared when window is blurred (sometimes?)
-
 const png_chunks_extract = require("png-chunks-extract")
 const png_chunks_encode = require("png-chunks-encode")
 const png_chunk_text = require("png-chunk-text")
@@ -27,7 +25,7 @@ componentHandler.upgradeElement(slider)
 
 var canvas = document.createElement("canvas")
 var ctx = canvas.getContext("2d")
-canvas.style.background = "#f0f"
+canvas.style.background = "#000"
 
 var gl = GL.create({preserveDrawingBuffer: true})
 container.appendChild(canvas)
@@ -196,6 +194,16 @@ var animate = function() {
 }
 
 animate()
+
+require("visibility-change-ponyfill")(function() {
+	if (!document.hidden) {
+		// fix for canvas being cleared when window is blurred in Chrome
+		gl.begin(gl.TRIANGLES)
+		gl.vertex(0, 0, 0) // triangle needs at least one vertex apparently
+		gl.end()
+		// NOTE: still sometimes shows a flash of the background color
+	}
+})
 
 play_pause_button.addEventListener("click", play_pause)
 

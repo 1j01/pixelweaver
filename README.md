@@ -2,13 +2,16 @@
 # Ink Dangle
 
 Ink Dangle *(working title)* is a reproducible procedural drawing tool
-focused around an [immediate mode][] drawing paradigm on a 3D canvas
+currently focused around an [immediate mode][] drawing paradigm on a 3D canvas
 in contrast to the usual [retained mode][] for 3D, such as with a [scene graph][].
 
 The name Ink Dangle comes from a specific vision I have for what I want to do with this,
 making 2D patterns by brushing ink in at different depths on a 3D canvas,
 but it could be expanded to allow for [retained mode][] 3D as well,
 maybe even VR.
+Other possibilities include 3D and 2D repeating patterns and tessellations
+by wrapping drawing calls and transforming and duplicating them,
+and plain old 2D.
 
 The app lets you scrub through an animation,
 simulating up to that point when you release.
