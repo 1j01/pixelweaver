@@ -19,8 +19,8 @@ simulating up to that point when you release.
 When you take a screenshot with the Export button,
 it embeds all the metadata required to reproduce the state,
 including the entire source code for the program,
-the position in the animation, the random seed, and any other inputs.
-It'll also include the time of the snapshot as the Creation Time,
+the position in the animation, the random seed, the viewport, and any other inputs.
+It'll also include the Creation Time (time of export),
 and the Author if specified via an `@author` tag in the source.
 There are a few other [standard metadata keywords][]
 like Title and Description that could be included with tags as well.
@@ -28,6 +28,11 @@ like Title and Description that could be included with tags as well.
 You can drag an exported file back onto the app to load up the program.
 Note that this is totally **unsandboxed** for now,
 and there isn't a reasonable way to preview a program's code before running it.
+
+Since the viewport is an input to the program,
+I could let you zoom around with the UI,
+previewing the change by scaling/translating the output of the program
+before simulating back up to that point.
 
 ## Usage
 
@@ -39,19 +44,15 @@ and then you can open a terminal/command prompt and run `npm install` and `npm r
 
 ## API
 
-The API is not well defined yet.
-Currently there's an arbitrary and kind of ridiculous viewport that's implicitly part of the API surface.
-It should make more sense as an "input" to the program.
-Might even let you zoom around with the UI,
-previewing the change by scaling/translating the output of the program
-before simulating back up to that point.
-Also I should probably have a flag for whether a program uses immediate mode or not,
-and maybe whether it uses a fixed or variable timestep.
+The API isn't exactly solid yet.
+The possibilities for the app got expanded quite a bit,
+and would probably need ~~some kind of plugin system~~ to invert control somehow
+to allow for these possibilities.
+<!-- I should probably have a flag for whether a program uses immediate mode or not,
+and maybe whether it uses a fixed or variable timestep. -->
 
-At the top level, you can do initialization and provide `@draw` and `@update`.
-
-It uses [lightgl.js][] for the drawing API, in immediate mode.
-`@draw` is passed the `gl` object.
+At the top level, you can provide `@draw` and `@update`.
+`@draw` is passed the `gl` object from [lightgl.js][].
 
 There are no requirements that a program's state be JSON-serializable.
 You can even update state in `draw` if you want, but that should generally be done in `update`.
@@ -62,7 +63,7 @@ I should probably prevent access to these,
 but I could provide `every` and `after` helpers.
 (`setTimeout` and `setInterval` are terrible names btw)
 
-Don't use global variables either.
+You shouldn't use global variables either.
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)

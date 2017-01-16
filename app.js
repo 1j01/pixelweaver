@@ -5,7 +5,7 @@ const png_chunk_text = require("png-chunk-text")
 const seed_random = require("seedrandom")
 const semver = require("semver")
 
-const API_VERSION = "0.1.1"
+const API_VERSION = "0.2.0"
 const API_VERSION_RANGE = "~" + semver.major(API_VERSION) + "." + semver.minor(API_VERSION)
 
 var program_source
@@ -30,21 +30,28 @@ canvas.style.background = "#000"
 var gl = GL.create({preserveDrawingBuffer: true})
 container.appendChild(canvas)
 
-// FIXME: bits implicitly part of the API surface
-gl.canvas.width = 1024
-gl.canvas.height = 1024
+var view_width = 10
+var view_height = 10
+var view_scale = 100
+var camera_x = 0
+var camera_y = 0
+var camera_z = -500
 
-// FIXME: bits implicitly part of the API surface
-var view_size = 5
-var view_z = -5
+var init_gl = function() {
+	gl.enable(gl.DEPTH_TEST)
 
-gl.enable(gl.DEPTH_TEST)
+	gl.canvas.width = view_width * view_scale
+	gl.canvas.height = view_height * view_scale
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+	
+	gl.matrixMode(gl.PROJECTION)
+	gl.loadIdentity()
+	gl.ortho(-view_width/2, view_width/2, -view_height/2, view_height/2, 0.1, 1000)
+	// gl.perspective(45, 1, 0.1, 1000)
+	gl.matrixMode(gl.MODELVIEW)
+}
 
-gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-gl.matrixMode(gl.PROJECTION)
-gl.loadIdentity()
-gl.ortho(-view_size, view_size, -view_size, view_size, 0.1, 1000)
-gl.matrixMode(gl.MODELVIEW)
+init_gl()
 
 var t = 0
 var CHECKPOINT_INTERVAL = 10
@@ -56,7 +63,7 @@ gl.onupdate = function() {
 gl.ondraw = function() {
 	if (program_context && program_context.draw) {
 		gl.loadIdentity()
-		gl.translate(0, 0, view_z)
+		gl.translate(0, 0, camera_z)
 		program_context.draw(gl)
 	}
 }
@@ -262,7 +269,17 @@ export_button.addEventListener("click", function() {
 		"Program Inputs": JSON.stringify({
 			t: t,
 			seed: seed,
-			// TODO: include viewport/projection, background color, and maybe custom inputs
+			view: {
+				width: view_width,
+				height: view_height,
+				camera: {
+					x: camera_x,
+					y: camera_y,
+					z: camera_z,
+				},
+				scale: view_scale
+			},
+			// TODO: include projection, background color, and maybe custom inputs
 		})
 	}
 	var author_tag_match = program_source.match(/@author(?:: ?| )(.*)/)
@@ -326,11 +343,33 @@ var handle_drop = function(e) {
 				alert("This program's API version (" + api_version + ") is valid but doesn't satisfy the current API version ^(" + API_VERSION + ") but also isn't greater than or less than it, which doesn't make any sense")
 				return
 			}
+			
 			var inputs = JSON.parse(metadata["Program Inputs"])
 			
 			if (inputs.seed) {
 				seed = inputs.seed
 			}
+			
+			// NOTE: weird backwards-compatibility poor defaults
+			view_width = 10
+			view_height = 10
+			view_scale = 102.4
+			camera_x = 0
+			camera_y = 0
+			camera_z = -5
+			
+			if (inputs.view) {
+				if (inputs.view.camera) {
+					view_scale = inputs.view.scale
+				}
+				if (inputs.view.camera) {
+					camera_x = inputs.view.camera.x
+					camera_y = inputs.view.camera.y
+					camera_z = inputs.view.camera.z
+				}
+			}
+			
+			init_gl()
 			
 			// TODO: sandbox
 			run_program_from_source(source)
