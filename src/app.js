@@ -27,6 +27,7 @@ canvas.style.background = "#000"
 
 var gl = GL.create({preserveDrawingBuffer: true})
 container.appendChild(canvas)
+// container.appendChild(gl.canvas)
 
 var view_width = 10
 var view_height = 10
@@ -118,16 +119,21 @@ var reset_to_start = function() {
 }
 
 var simulate_to = function(new_t) {
-	clear_screen()
 	if (program_source) {
-		init_program()
-		for (t = 0; t <= new_t; t += 1) {
+		if (new_t < t) {
+			clear_screen()
+			t = 0
+			init_program()
+		}
+		// for (; t <= new_t; t += 1) {
+		// TODO: limit this loop, probably based on execution time would be good
+		while (++t <= new_t) {
 			gl.onupdate()
 			gl.ondraw()
 			maybe_make_checkpoint()
 		}
-		// TODO: simulate progressively
 	}
+	slider.MaterialSlider.change(t)
 }
 
 var playing = false
@@ -175,11 +181,12 @@ var animate = function() {
 		if (show_checkpoint) {
 			// TODO: maybe show an interpolation between checkpoints
 			var new_t = parseFloat(slider.value)
-			t = new_t
-			var checkpoint = get_nearest_prior_checkpoint(t)
+			var checkpoint = get_nearest_prior_checkpoint(new_t)
 			if (checkpoint) {
-				if (t > checkpoint.t + CHECKPOINT_INTERVAL + 1) {
-					simulate_to(t)
+				// TODO: simulate smoothly when going forwards, otherwise show checkpoint
+				if (new_t > checkpoint.t + CHECKPOINT_INTERVAL + 1) {
+				// if (t >= checkpoint.t + 1 && new_t >= checkpoint.t + 1) {
+					simulate_to(new_t)
 					show_image = gl.canvas
 				}else{
 					show_image = checkpoint.canvas
