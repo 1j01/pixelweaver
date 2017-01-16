@@ -29,9 +29,9 @@
     "pcg"
   ],
   "scripts": {
-    "build": "webpack app.js build/bundle.js --display-error-details",
-    "watch": "webpack app.js build/bundle.js -d --watch --display-error-details",
-    "dev": "parallelshell \"webpack app.js build/bundle.js -d --watch --display-error-details\" \"live-server\""
+    "build": "webpack src/app.js build/bundle.js --display-error-details",
+    "watch": "webpack src/app.js build/bundle.js -d --watch --display-error-details",
+    "dev": "parallelshell \"webpack src/app.js build/bundle.js -d --watch --display-error-details\" \"live-server\""
   },
   "devDependencies": {
     "coffee-script": "^1.11.1",
