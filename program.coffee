@@ -25,7 +25,7 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 	gl.color(0.7, 0.3, 0)
 	gl.vertex(a_1_x, a_1_y, base_z)
 	gl.vertex(b_1_x, b_1_y, base_z)
-	gl.vertex(a_2_x, a_2_y, base_z + 0.5)
+	gl.vertex(a_2_x, a_2_y, base_z + 0.1)
 	gl.vertex(a_2_x, a_2_y, base_z)
 	gl.vertex(b_2_x, b_2_y, base_z)
 	gl.color(1, 0.5, 0.1); gl.vertex(b_1_x, b_1_y, base_z + 0.5)
@@ -38,6 +38,7 @@ class Thing
 		@angle = 0
 		@speed = 0.05
 		@angular_speed = 0
+		@z_speed = (Math.random() * 2 - 1) / 5
 		@life = 5
 		@[k] = v for k, v of props
 		@t = 0
@@ -54,6 +55,7 @@ class Thing
 		@x += Math.sin(@angle) * @speed
 		@y += Math.cos(@angle) * @speed
 		@y += 0.001
+		@z += @z_speed
 		# @x += 0.01
 		dx = @x - prev_x
 		dy = @y - prev_y
