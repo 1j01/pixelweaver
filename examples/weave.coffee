@@ -45,11 +45,13 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 	# gl.color(0.7, 0.3, 0)
 	gl.vertex(a_1_x, a_1_y, base_z)
 	gl.vertex(b_1_x, b_1_y, base_z)
-	gl.vertex(a_2_x, a_2_y, base_z + 0.1)
+	# gl.vertex(a_2_x, a_2_y, base_z + 0.1)
+	gl.vertex(a_2_x, a_2_y, base_z)
 	gl.vertex(a_2_x, a_2_y, base_z)
 	gl.vertex(b_2_x, b_2_y, base_z)
 	# gl.color(1, 0.5, 0.1)
-	gl.vertex(b_1_x, b_1_y, base_z + 0.5)
+	# gl.vertex(b_1_x, b_1_y, base_z + 0.5)
+	gl.vertex(b_1_x, b_1_y, base_z)
 
 
 class Thing
@@ -75,9 +77,10 @@ class Thing
 		# @vy += Math.cos(t/50) / 5000
 		@x += @vx
 		@y += @vy
-		if @vx > 0
-			# @z = Math.sin((@x + @y + 0.5) * Math.PI) 
-			@z = Math.sin((@x + 0.5) * Math.PI) 
+		# if @vx > 0
+		# 	# @z = Math.sin((@x + @y + 0.5) * Math.PI) 
+		# 	@z = Math.sin((@x + 0.5) * Math.PI) 
+		@z = Math.sin((@x + 0.5) * Math.PI) * Math.sign(@vx)
 		@angle = Math.PI / 2 - Math.atan2(@vy, @vx)
 	
 	draw: (gl)->
@@ -88,7 +91,7 @@ class Thing
 		gl.color(0, 0, 0, 1)
 		# segment(gl, @x, @y, @z - 0.00009, 0.11 * @width, 0.1, @angle)
 		segment(gl, @x, @y, @z - 0.01, 1.1 * @width, 0.1, @angle)
-		gl.color(1, 1, 1, 1)
+		gl.color((@y + @z) / 5 + @x / 10, (@x + @y / 2 + @z) / 5, @z + @x / 3, 1)
 		segment(gl, @x, @y, @z, @width, 0.1, @angle)
 		gl.end()
 
@@ -96,16 +99,31 @@ class Thing
 # things = [new Thing(y: -4)]
 
 things = []
+width = rand(0.01, 1.5)
 
 for i in [0..5]
-	things.push new Thing(x: -i, y: i, vy: 0.01, vx: 0.01)
-	things.push new Thing(x: i, y: i, vy: 0.01, vx: -0.01)
+	things.push new Thing({x: -i, y: i, vy: 0.01, vx: 0.01, width})
+	things.push new Thing({x: i, y: i, vy: 0.01, vx: -0.01, width})
 
 t = 0
 do @update = ->
 	thing.update(t) for thing in things
 
-rotate_args = [rand(100)].concat(rand() for [0..3])
+# rotate_args = [rand(100)].concat(rand() for [0..3])
+# rotate_arg_bases = [rand(100)].concat(rand() for [0..3])
+# rotate_arg_sin_amplitudes = [rand(50)].concat(rand() for [0..3])
+# rotate_arg_sin_periods = (rand(50, 500) for [0..4])
+
+rotate_arg_fns =
+	for i in [0..4]
+		do (i)->
+			base_value = if i is 0 then rand(-50, 50) else rand()
+			sine_amplitude =
+				if rand() < 0.8 then 0 else
+					if i is 0 then rand(50) else rand()
+			sine_period = rand(50, 600)
+			->
+				base_value + Math.sin(t / sine_period) * sine_amplitude
 
 @draw = (gl)->
 	if t++ is 0
@@ -115,7 +133,9 @@ rotate_args = [rand(100)].concat(rand() for [0..3])
 	gl.translate(0, -5, 0)
 	# gl.rotate(30, 1, 0, 0)
 	# gl.rotate(30, 1, 0.5, 0.2)
-	# gl.rotate(30, rand(), rand(), rand())
+	
+	rotate_args = (fn() for fn in rotate_arg_fns)
+	
 	gl.rotate.apply(gl, rotate_args)
 	
 	thing.draw(gl) for thing in things
