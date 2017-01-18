@@ -63,6 +63,7 @@ gl.ondraw = function() {
 	if (program_context && program_context.draw) {
 		gl.loadIdentity()
 		gl.translate(0, 0, camera_z)
+		// gl should probably just be global for the program
 		program_context.draw(gl)
 	}
 }
@@ -108,6 +109,7 @@ var clear_checkpoints = function() {
 }
 
 var clear_screen = function() {
+	// TODO: reset_gl instead; should reset clearColor and probably other things
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
@@ -233,6 +235,8 @@ export_button.addEventListener("click", function() {
 			t: t,
 			seed: seed,
 			view: {
+				// can use "fov" to indicate perspective projection
+				// maybe it should be canvas width/height and fov/zoom
 				width: view_width,
 				height: view_height,
 				camera: {
@@ -242,7 +246,7 @@ export_button.addEventListener("click", function() {
 				},
 				scale: view_scale
 			},
-			// TODO: include projection, background color, and maybe custom inputs
+			// custom inputs will go here
 		})
 	}
 	var author_tag_match = program_source.match(/@author(?:: ?| )(.*)/)
@@ -398,7 +402,7 @@ var run_program_from_source = function(source) {
 	play()
 }
 
-fetch("program.coffee").then(function(response) {
+fetch("weave.coffee").then(function(response) {
 	return response.text().then(function(text) {
 		run_program_from_source(text)
 	})

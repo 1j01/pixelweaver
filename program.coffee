@@ -1,6 +1,41 @@
 
 # @author Isaiah Odhner
 
+lerp = (a, b, b_ness)->
+	a + (b - a) * b_ness
+
+rand = (a=1, b=0)->
+	lerp(a, b, Math.random())
+
+dist = (x1, y1, x2, y2)->
+	Math.hypot(x2-x1, y2-y1)
+
+reticle = (gl, x, y, z, r, tris=5, offset_angle=0)->
+	points = tris * 3
+	gl.begin(gl.TRIANGLES)
+	for i in [0..points]
+		angle = Math.PI * 2 * i / points + offset_angle
+		gl.vertex(
+			x + Math.sin(angle) * r,
+			y + Math.cos(angle) * r,
+			z
+		)
+	gl.end()
+
+circle = (gl, x, y, z, r, points=3*5)->
+	gl.begin(gl.TRIANGLE_FAN)
+	# gl.begin(gl.POLYGON)
+	# gl.polygonMode(gl.FRONT_AND_BACK, gl.FILL)
+	# for angle in [0..Math.PI*2] by Math.PI*2/points
+	for i in [0..points]
+		angle = Math.PI * 2 * i / points
+		gl.vertex(
+			x + Math.sin(angle) * r,
+			y + Math.cos(angle) * r,
+			z
+		)
+	gl.end()
+
 tri = (gl, base_x, base_y, base_z, base_width, altitude, angle)->
 	# TODO: z_tilt_angle?
 	point_x = base_x + Math.sin(angle) * altitude
@@ -31,6 +66,45 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 	# gl.color(1, 0.5, 0.1)
 	gl.vertex(b_1_x, b_1_y, base_z + 0.5)
 
+
+space_to_colonize =
+	xr: 4
+	yr: 2
+	x: 0
+	y: 2
+
+targets = []
+
+for [0..100]
+	x = rand(-1, 1)
+	y = rand(-1, 1)
+	if dist(x, y, 0, 0) < 1
+		targets.push({
+			x: space_to_colonize.x + x * space_to_colonize.xr
+			y: space_to_colonize.y + y * space_to_colonize.yr
+			z: 0
+			reached: no
+		})
+	
+	# x = rand(-space_to_colonize.xr, space_to_colonize.xr)
+	# y = rand(-space_to_colonize.yr, space_to_colonize.yr)
+	# if
+	# 	targets.push({
+	# 		x: space_to_colonize.x + x
+	# 		y: space_to_colonize.y + y
+	# 	})
+
+nearestTargetTo = (x, y)->
+	closest_dist = Infinity
+	closest_target = null
+	for target in targets when not target.reached
+		target_dist = dist(target.x, target.y, x, y) 
+		if target_dist < closest_dist
+			closest_dist = target_dist
+			closest_target = target
+	closest_target
+
+
 class Thing
 	constructor: (props={})->
 		@x = 0
@@ -44,13 +118,31 @@ class Thing
 		@[k] = v for k, v of props
 		@t = 0
 	
+	findTarget: ->
+		a = 3
+		nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
+	
 	update: ->
 		return if @life < 0
-		@life -= 0.04 * Math.random()
+		@life -= 0.03 * Math.random()
 		@t += Math.random()
-		@angular_speed += (Math.random() - 0.5) / 50
-		@angular_speed *= 0.99
-		@angle += @angular_speed
+		
+		# TODO: implement actual space colonization algorithm
+		# specifically with control of branching
+		
+		for target in targets
+			if dist(target.x, target.y, @x, @y) < 0.1
+				target.reached = yes
+		
+		if @target?.reached
+			@target = null
+		
+		if rand() < 0.01 or not @target
+			@target = @findTarget()
+		
+		# @angular_speed += (Math.random() - 0.5) / 50
+		# @angular_speed *= 0.99
+		# @angle += @angular_speed
 		prev_x = @x
 		prev_y = @y
 		@x += Math.sin(@angle) * @speed
@@ -58,8 +150,26 @@ class Thing
 		@y += 0.001
 		@z += @z_speed
 		# @x += 0.01
+		
+		# if @target?
+		# 	dist_to_target = dist(@target.x, @target.y, @x, @y)
+		# 	# @angle = -Math.atan2(@target.y - @y, @target.x - @x) + Math.PI / 2
+		# 	# @angle = Math.atan2(@target.y - @y, @target.x - @x) - Math.PI / 2
+		# 	amount = 0.01
+		# 	@x += (@target.x - @x) / dist_to_target * amount
+		# 	@y += (@target.y - @y) / dist_to_target * amount
+		
 		dx = @x - prev_x
 		dy = @y - prev_y
+		
+		if @target?
+			dist_to_target = dist(@target.x, @target.y, @x, @y)
+			# @angle = -Math.atan2(@target.y - @y, @target.x - @x) + Math.PI / 2
+			# @angle = Math.atan2(@target.y - @y, @target.x - @x) - Math.PI / 2
+			amount = 0.1
+			dx += (@target.x - @x) / dist_to_target * amount
+			dy += (@target.y - @y) / dist_to_target * amount
+		
 		# @angle = -Math.atan2(-dy, -dx) - Math.PI / 2
 		# dx = prev_x - @x
 		# dy = prev_y - @y
@@ -71,7 +181,7 @@ class Thing
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle + Math.PI)
 		gl.color(0, 0, 0, 1)
-		segment(gl, @x, @y, @z, 0.11 * @life, 0.1, @angle)
+		segment(gl, @x, @y, @z - 0.00009, 0.11 * @life, 0.1, @angle)
 		gl.color(1, 1, 1, 1)
 		segment(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		gl.end()
@@ -104,18 +214,33 @@ things = [new Thing(y: -4)]
 			new_thing.life *= 0.8
 			# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
 			# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-			new_thing.angle = thing.angle + (Math.random() - 0.5)
-			new_thing.angular_speed = (Math.random() - 0.5) / 15
+			new_thing.angle = thing.angle + rand(-1, 1) / 2
+			new_thing.angular_speed = rand(-1, 1) / 30
 			things.push(new Thing(new_thing))
 
 t = 0
 @draw = (gl)->
 	if t++ is 0
-		gl.clearColor(0.9, 0.9, 0.9, 1)
+		gl.clearColor(rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1)
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	
-	# gl.rotate(-30, 1, 0, 0)
+	# gl.rotate(30, 1, 0, 0)
 	# gl.begin(gl.TRIANGLES)
 	# tri(gl, 0, 0, 0, 1, 2, 20)
 	# gl.end()
+	
+	for target in targets
+		# gl.color(1, 1, 1, 1)
+		# reticle(gl, target.x, target.y, 0, 0.1, 5, 0.4 + t/12.5*(not target.reached))
+		if target.reached
+			gl.color(0.1, 1, 0.2, 1)
+		else
+			gl.color(1, 0, 0, 1)
+		# reticle(gl, target.x, target.y, target.reached, 0.2, 5)
+		circle(gl, target.x, target.y, target.reached, 0.1)
+		# reticle(gl, target.x, target.y, 0, 0.1, 5, t/15.2*(not target.reached))
+		# reticle(gl, target.x, target.y, target.reached, rand(0, 0.5), 5)
+		# if rand() < 0.1
+		# 	reticle(gl, target.x, target.y, 0, rand(0, 0.5), 5, t/15.2*(not target.reached))
+	
 	thing.draw(gl) for thing in things
