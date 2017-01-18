@@ -48,6 +48,8 @@ var init_gl = function() {
 	gl.ortho(-view_width/2, view_width/2, -view_height/2, view_height/2, 0.1, 1000)
 	// gl.perspective(45, 1, 0.1, 1000)
 	gl.matrixMode(gl.MODELVIEW)
+	// gl.clearColor(0, 0, 0, 1)
+	// gl.color(1, 1, 1, 1)
 }
 
 init_gl()
@@ -64,6 +66,7 @@ gl.ondraw = function() {
 		gl.loadIdentity()
 		gl.translate(0, 0, camera_z)
 		// gl should probably just be global for the program
+		// or at least there should be an init method you can define that also gets gl
 		program_context.draw(gl)
 	}
 }
@@ -109,7 +112,7 @@ var clear_checkpoints = function() {
 }
 
 var clear_screen = function() {
-	// TODO: reset_gl instead; should reset clearColor and probably other things
+	// TODO: should be part of init_gl; should reset clearColor and color and probably other things
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 }
 
@@ -127,12 +130,21 @@ var simulate_to = function(new_t) {
 			t = 0
 			init_program()
 		}
-		// for (; t <= new_t; t += 1) {
-		// TODO: limit this loop, probably based on execution time would be good
+		
+		// TODO: limit this loop based on execution time
+		// will need to change things in the application logic
+		// might want to pass loop_execution_limit_ms as a parameter
+		
+		// var loop_execution_limit_ms = 40
+		// var start = performance.now()
 		while (++t <= new_t) {
 			gl.onupdate()
 			gl.ondraw()
 			maybe_make_checkpoint()
+			// var elapsed = performance.now() - start
+			// if (elapsed > loop_execution_limit_ms) {
+			// 	break
+			// }
 		}
 	}
 	slider.MaterialSlider.change(t)
