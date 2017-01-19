@@ -73,13 +73,10 @@ class Thing
 		nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
 	
 	update: (t)->
-		# @vx += Math.sin(t/50) / 5000
-		# @vy += Math.cos(t/50) / 5000
+		# @vx += Math.sin(t/15) / 1500 * Math.sign(@vx)
+		# @vy += Math.cos(t/15) / 1500
 		@x += @vx
 		@y += @vy
-		# if @vx > 0
-		# 	# @z = Math.sin((@x + @y + 0.5) * Math.PI) 
-		# 	@z = Math.sin((@x + 0.5) * Math.PI) 
 		@z = Math.sin((@x + 0.5) * Math.PI) * Math.sign(@vx)
 		@angle = Math.PI / 2 - Math.atan2(@vy, @vx)
 	
@@ -96,23 +93,16 @@ class Thing
 		gl.end()
 
 
-# things = [new Thing(y: -4)]
-
 things = []
-width = rand(0.01, 1.5)
+width = rand(0.01, 1)
 
-for i in [0..5]
+for i in [-5..5]
 	things.push new Thing({x: -i, y: i, vy: 0.01, vx: 0.01, width})
 	things.push new Thing({x: i, y: i, vy: 0.01, vx: -0.01, width})
 
 t = 0
 do @update = ->
 	thing.update(t) for thing in things
-
-# rotate_args = [rand(100)].concat(rand() for [0..3])
-# rotate_arg_bases = [rand(100)].concat(rand() for [0..3])
-# rotate_arg_sin_amplitudes = [rand(50)].concat(rand() for [0..3])
-# rotate_arg_sin_periods = (rand(50, 500) for [0..4])
 
 rotate_arg_fns =
 	for i in [0..4]
@@ -131,11 +121,7 @@ rotate_arg_fns =
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	
 	gl.translate(0, -5, 0)
-	# gl.rotate(30, 1, 0, 0)
-	# gl.rotate(30, 1, 0.5, 0.2)
 	
-	rotate_args = (fn() for fn in rotate_arg_fns)
-	
-	gl.rotate.apply(gl, rotate_args)
+	gl.rotate.apply(gl, (fn() for fn in rotate_arg_fns))
 	
 	thing.draw(gl) for thing in things

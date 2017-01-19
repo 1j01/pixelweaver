@@ -1,6 +1,7 @@
 
 const seed_random = require("seedrandom")
 const semver = require("semver")
+const is_png = require("is-png")
 const {inject_metadata, read_metadata} = require("./png-metadata.js")
 
 const API_VERSION = "0.2.0"
@@ -285,6 +286,101 @@ reseed_button.addEventListener("click", function() {
 	}
 })
 
+var load_program = function(source, metadata) {
+	
+	if (metadata) {
+		console.log("Load program from metadata", metadata)
+		
+		// XXX: avoiding program_source variable name used above
+		// var source = metadata["Program Source"]
+		var api_version = metadata["API Version"]
+		
+		if (!source) {
+			alert("This PNG does not contain program source code")
+			return
+		} else if (!api_version) {
+			alert("This PNG does not specify an API version")
+			return
+		} else if (!semver.valid(api_version)) {
+			alert("This PNG specifies an invalid API version (" + api_version + ")")
+			return
+		} else if (semver.satisfies(api_version, API_VERSION_RANGE)) {
+			
+		} else if (semver.lt(api_version, API_VERSION)) {
+			if(!confirm("This program uses an earlier version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
+				return
+			}
+		} else if (semver.gt(api_version, API_VERSION)) {
+			if(!confirm("This program uses a later version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
+				return
+			}
+		} else {
+			alert("This program's API version (" + api_version + ") is valid but doesn't satisfy the current API version ^(" + API_VERSION + ") but also isn't greater than or less than it, which doesn't make any sense")
+			return
+		}
+		
+		var inputs = JSON.parse(metadata["Program Inputs"])
+		
+		if (inputs.seed) {
+			seed = inputs.seed
+		}
+		
+		// NOTE: weird backwards-compatibility poor defaults
+		view_width = 10
+		view_height = 10
+		view_scale = 102.4
+		camera_x = 0
+		camera_y = 0
+		camera_z = -5
+		
+		if (inputs.view) {
+			if (inputs.view.camera) {
+				view_scale = inputs.view.scale
+			}
+			if (inputs.view.camera) {
+				camera_x = inputs.view.camera.x
+				camera_y = inputs.view.camera.y
+				camera_z = inputs.view.camera.z
+			}
+		}
+	} else {
+		// NOTE: should be kept in sync with initial declarations (XXX)
+		view_width = 10
+		view_height = 10
+		view_scale = 100
+		camera_x = 0
+		camera_y = 0
+		camera_z = -500
+	}
+	
+	init_gl()
+	
+	run_program_from_source(source)
+	
+	// pause()
+	// simulate_to(inputs.t)
+}
+
+var load_program_from_file = function(file) {
+	var file_reader = new FileReader
+	file_reader.onload = function() {
+		var array_buffer = this.result
+		var uint8_array = new Uint8Array(array_buffer)
+		if (is_png(uint8_array)) {
+			var metadata = read_metadata(uint8_array)
+			var source = metadata["Program Source"]
+			load_program(source, metadata)
+		} else {
+			var file_reader = new FileReader
+			file_reader.onload = function() {
+				load_program(this.result)
+			}
+			file_reader.readAsText(file)
+		}
+	}
+	file_reader.readAsArrayBuffer(file)
+}
+
 var handle_drop = function(e) {
 	e.stopPropagation()
 	e.preventDefault()
@@ -292,70 +388,7 @@ var handle_drop = function(e) {
 	var file = e.dataTransfer.files[0]
 	
 	if (file) {
-		read_metadata(file, function(metadata) {
-			console.log("Load program from metadata", metadata)
-			
-			// XXX: avoiding program_source variable name used above
-			var source = metadata["Program Source"]
-			var api_version = metadata["API Version"]
-			
-			if (!source) {
-				alert("This PNG does not contain program source code")
-				return
-			} else if (!api_version) {
-				alert("This PNG does not specify an API version")
-				return
-			} else if (!semver.valid(api_version)) {
-				alert("This PNG specifies an invalid API version (" + api_version + ")")
-				return
-			} else if (semver.satisfies(api_version, API_VERSION_RANGE)) {
-				
-			} else if (semver.lt(api_version, API_VERSION)) {
-				if(!confirm("This program uses an earlier version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
-					return
-				}
-			} else if (semver.gt(api_version, API_VERSION)) {
-				if(!confirm("This program uses a later version of the API (" + api_version + "). Try loading anyways? (Current API version: " + API_VERSION + ")")){
-					return
-				}
-			} else {
-				alert("This program's API version (" + api_version + ") is valid but doesn't satisfy the current API version ^(" + API_VERSION + ") but also isn't greater than or less than it, which doesn't make any sense")
-				return
-			}
-			
-			var inputs = JSON.parse(metadata["Program Inputs"])
-			
-			if (inputs.seed) {
-				seed = inputs.seed
-			}
-			
-			// NOTE: weird backwards-compatibility poor defaults
-			view_width = 10
-			view_height = 10
-			view_scale = 102.4
-			camera_x = 0
-			camera_y = 0
-			camera_z = -5
-			
-			if (inputs.view) {
-				if (inputs.view.camera) {
-					view_scale = inputs.view.scale
-				}
-				if (inputs.view.camera) {
-					camera_x = inputs.view.camera.x
-					camera_y = inputs.view.camera.y
-					camera_z = inputs.view.camera.z
-				}
-			}
-			
-			init_gl()
-			
-			// TODO: sandbox
-			run_program_from_source(source)
-			
-			// pause()
-			// simulate_to(inputs.t)
-		})
+		load_program_from_file(file)
 	}
 }
 
@@ -405,6 +438,7 @@ var init_program = function() {
 	seed_random(seed, {global: true})
 	program_context = {}
 	CoffeeScript.eval.call(program_context, program_source)
+	// TODO: sandbox
 }
 
 var run_program_from_source = function(source) {

@@ -25,22 +25,31 @@ exports.inject_metadata = function(blob, metadata, callback) {
 	})
 }
 
-exports.read_metadata = function(blob, callback) {
-	read_png_chunks_from_blob(blob, function(chunks) {
+// exports.inject_metadata = function(uint8_array, metadata) {
+// 	var chunks = png_chunks_extract(uint8_array)
+// 	for (var k in metadata){
+// 		chunks.splice(-1, 0, png_chunk_text.encode(k, metadata[k]))
+// 	}
+// 	var reencoded_buffer = png_chunks_encode(chunks)
+// 	var reencoded_blob = new Blob([reencoded_buffer], {type: "image/png"})
+// 	return reencoded_blob
+// }
+
+exports.read_metadata = function(uint8_array) {
+	var chunks = png_chunks_extract(uint8_array)
 		
-		var textChunks = chunks.filter(function(chunk) {
-			return chunk.name === "tEXt"
-		}).map(function(chunk) {
-			return png_chunk_text.decode(chunk.data)
-		})
-		
-		var metadata = {}
-		
-		for (var i = 0; i < textChunks.length; i++) {
-			var textChunk = textChunks[i]
-			metadata[textChunk.keyword] = textChunk.text
-		}
-		
-		callback(metadata)
+	var textChunks = chunks.filter(function(chunk) {
+		return chunk.name === "tEXt"
+	}).map(function(chunk) {
+		return png_chunk_text.decode(chunk.data)
 	})
+	
+	var metadata = {}
+	
+	for (var i = 0; i < textChunks.length; i++) {
+		var textChunk = textChunks[i]
+		metadata[textChunk.keyword] = textChunk.text
+	}
+	
+	return metadata
 }

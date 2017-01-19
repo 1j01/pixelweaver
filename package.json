@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "coffee-script": "^1.11.1",
+    "is-png": "^1.0.0",
     "litegl": "^0.1.0",
     "live-server": "^1.1.0",
     "parallelshell": "^2.0.0",
