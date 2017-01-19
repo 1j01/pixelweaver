@@ -25,10 +25,7 @@ componentHandler.upgradeElement(slider)
 var canvas = document.createElement("canvas")
 var ctx = canvas.getContext("2d")
 canvas.style.background = "#000"
-
-var gl = GL.create({preserveDrawingBuffer: true})
 container.appendChild(canvas)
-// container.appendChild(gl.canvas)
 
 var view_width = 10
 var view_height = 10
@@ -37,7 +34,11 @@ var camera_x = 0
 var camera_y = 0
 var camera_z = -500
 
+var gl
+
 var init_gl = function() {
+	gl = GL.create({preserveDrawingBuffer: true})
+	
 	gl.enable(gl.DEPTH_TEST)
 
 	gl.canvas.width = view_width * view_scale
@@ -47,33 +48,30 @@ var init_gl = function() {
 	gl.matrixMode(gl.PROJECTION)
 	gl.loadIdentity()
 	gl.ortho(-view_width/2, view_width/2, -view_height/2, view_height/2, 0.1, 1000)
-	// gl.perspective(45, 1, 0.1, 1000)
+	// gl.perspective(view_fov, view_width/view_height, 0.1, 1000)
 	gl.matrixMode(gl.MODELVIEW)
-	// TODO: should reset clearColor and color and probably other things
-	// (might need to just create a new canvas/context)
-	// gl.clearColor(0, 0, 0, 1)
-	// gl.color(1, 1, 1, 1)
+	
+	// NOTE: these don't need to be attached to gl; that's just how it's done in the examples
+	gl.onupdate = function() {
+		if (program_context && program_context.update) {
+			program_context.update()
+		}
+	}
+	gl.ondraw = function() {
+		if (program_context && program_context.draw) {
+			gl.loadIdentity()
+			gl.translate(0, 0, camera_z)
+			// gl should probably just be global for the program
+			// or at least there should be an init method you can define that also gets gl
+			program_context.draw(gl)
+		}
+	}
 }
 
 init_gl()
 
 var t = 0
 var CHECKPOINT_INTERVAL = 10
-gl.onupdate = function() {
-	if (program_context && program_context.update) {
-		program_context.update()
-	}
-}
-gl.ondraw = function() {
-	if (program_context && program_context.draw) {
-		gl.loadIdentity()
-		gl.translate(0, 0, camera_z)
-		// gl should probably just be global for the program
-		// or at least there should be an init method you can define that also gets gl
-		program_context.draw(gl)
-	}
-}
-
 var checkpoints = []
 var get_nearest_prior_checkpoint = function(prior_to_t) {
 	var nearest_checkpoint
@@ -165,12 +163,6 @@ var seek_by = function(delta) {
 }
 
 var animate = function() {
-	var post =
-		window.requestAnimationFrame ||
-		window.mozRequestAnimationFrame ||
-		window.webkitRequestAnimationFrame ||
-		function(callback) { setTimeout(callback, 1000 / 60) }
-	
 	function update() {
 		if (playing) {
 			t += 1
@@ -204,7 +196,7 @@ var animate = function() {
 			canvas.height = show_image.height
 			ctx.drawImage(show_image, 0, 0)
 		}
-		post(update)
+		requestAnimationFrame(update)
 	}
 	update()
 }
@@ -341,8 +333,6 @@ var load_program = function(source, metadata) {
 		camera_z = -500
 	}
 	
-	init_gl()
-	
 	run_program_from_source(source)
 	
 	// pause()
@@ -423,12 +413,15 @@ addEventListener("keydown", function(e) {
 })
 
 var init_program = function() {
+	init_gl()
 	
 	clear_checkpoints()
+	
 	t = 0
 	slider.MaterialSlider.change(t)
 	
 	seed_random(seed, {global: true})
+	
 	program_context = {}
 	CoffeeScript.eval.call(program_context, program_source)
 	// TODO: sandbox
