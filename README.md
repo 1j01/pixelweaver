@@ -34,6 +34,10 @@ I could let you zoom around with the UI,
 previewing the change by scaling/translating the output of the program
 before simulating back up to that point.
 
+Could render the program in parallel at a zoomed out scale,
+and use that for the preview when zooming out of panning,
+and potentially a minimap for navigation as well.
+
 ## Usage
 
 Currently there's no integrated code editor;

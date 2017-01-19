@@ -96,9 +96,13 @@ class Thing
 things = []
 width = rand(0.01, 1)
 
-for i in [-5..5]
-	things.push new Thing({x: -i, y: i, vy: 0.01, vx: 0.01, width})
-	things.push new Thing({x: i, y: i, vy: 0.01, vx: -0.01, width})
+for i in [-9..9]
+	# things.push new Thing({x: -i, y: +i, vy: +0.01, vx: +0.01, width})
+	# things.push new Thing({x: +i, y: +i, vy: +0.01, vx: -0.01, width})
+	# things.push new Thing({x: -i, y: +i, vy: -0.01, vx: -0.01, width})
+	# things.push new Thing({x: +i, y: +i, vy: -0.01, vx: +0.01, width})
+	things.push new Thing({x: -i-5, y: i-5, vy: +0.01, vx: +0.01, width})
+	things.push new Thing({x: +i+5, y: i-5, vy: +0.01, vx: -0.01, width})
 
 t = 0
 do @update = ->

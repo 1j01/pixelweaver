@@ -49,6 +49,8 @@ var init_gl = function() {
 	gl.ortho(-view_width/2, view_width/2, -view_height/2, view_height/2, 0.1, 1000)
 	// gl.perspective(45, 1, 0.1, 1000)
 	gl.matrixMode(gl.MODELVIEW)
+	// TODO: should reset clearColor and color and probably other things
+	// (might need to just create a new canvas/context)
 	// gl.clearColor(0, 0, 0, 1)
 	// gl.color(1, 1, 1, 1)
 }
@@ -112,22 +114,9 @@ var clear_checkpoints = function() {
 	// might want to release ImageBitmaps here later
 }
 
-var clear_screen = function() {
-	// TODO: should be part of init_gl; should reset clearColor and color and probably other things
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-}
-
-var reset_to_start = function() {
-	clear_checkpoints()
-	clear_screen()
-	t = 0
-	slider.MaterialSlider.change(t)
-}
-
 var simulate_to = function(new_t) {
 	if (program_source) {
 		if (new_t < t) {
-			clear_screen()
 			t = 0
 			init_program()
 		}
@@ -279,7 +268,6 @@ export_button.addEventListener("click", function() {
 })
 
 reseed_button.addEventListener("click", function() {
-	reset_to_start()
 	seed = seed_gen()
 	if (program_source) {
 		init_program()
@@ -435,6 +423,11 @@ addEventListener("keydown", function(e) {
 })
 
 var init_program = function() {
+	
+	clear_checkpoints()
+	t = 0
+	slider.MaterialSlider.change(t)
+	
 	seed_random(seed, {global: true})
 	program_context = {}
 	CoffeeScript.eval.call(program_context, program_source)
@@ -442,7 +435,6 @@ var init_program = function() {
 }
 
 var run_program_from_source = function(source) {
-	reset_to_start()
 	program_source = source
 	init_program()
 	play()
