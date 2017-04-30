@@ -70,7 +70,7 @@ space_to_colonize =
 	x: 0
 	y: 2
 
-attract_dist = 1
+attract_dist = Infinity
 
 targets = []
 
@@ -95,27 +95,22 @@ nearest = (points, x, y)->
 			closest_point = point
 	closest_point
 
-class Thing
+class Branch
 	constructor: (props={})->
 		@x = 0
 		@y = 0
 		@z = 0
 		@angle = 0
-		@speed = 0.05
-		@angular_speed = 0
-		@z_speed = (Math.random() * 2 - 1) / 5
-		@life = 5
+		# @speed = 0.05
+		# @angular_speed = 0
+		# @z_speed = (Math.random() * 2 - 1) / 5
+		# @life = 5
 		@[k] = v for k, v of props
-		@t = 0
 		@attractors = []
 	
 	update: ->
-		return if @life < 0
-		@life -= 0.03 * Math.random()
-		@t += Math.random()
-		
-		# TODO: implement actual space colonization algorithm
-		# specifically with control of branching
+		# return if @life < 0
+		# @life -= 0.03 * Math.random()
 		
 		for target in targets
 			if dist(target.x, target.y, @x, @y) < 0.1
@@ -124,11 +119,9 @@ class Thing
 		# @angular_speed += (Math.random() - 0.5) / 50
 		# @angular_speed *= 0.99
 		# @angle += @angular_speed
-		prev_x = @x
-		prev_y = @y
-		@x += Math.sin(@angle) * @speed
-		@y += Math.cos(@angle) * @speed
-		@z += @z_speed
+		# @x += Math.sin(@angle) * @speed
+		# @y += Math.cos(@angle) * @speed
+		# @z += @z_speed
 		
 		attract_x_acc = 0
 		attract_y_acc = 0
@@ -142,7 +135,13 @@ class Thing
 			# attract_y_acc += (target.y - @y) / dist_to_target
 		
 		if @attractors.length > 0
-			@angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
+			angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
+			branch_length = 0.05
+			x = @x + Math.sin(angle) * branch_length
+			y = @y + Math.cos(angle) * branch_length
+			new_thing = new Branch({x, y, angle, parent: @})
+			
+			branches.push(new_thing)
 	
 	draw: (gl)->
 		gl.begin(gl.TRIANGLES)
@@ -158,33 +157,25 @@ class Thing
 		gl.end()
 
 
-things = [new Thing(y: -4)]
+root_branch = new Branch(y: -4)
+branches = [root_branch]
 
 @update = ->
-	thing.update() for thing in things
+	thing.update() for thing in branches
 	
-	for thing in things
+	for thing in branches
 		thing.attractors = []
 	
 	for target in targets when not target.reached
-		nearest_thing = nearest(things, target.x, target.y)
+		nearest_thing = nearest(branches, target.x, target.y)
 		if nearest_thing?
 			if dist(nearest_thing.x, nearest_thing.y, target.x, target.y) < attract_dist
 				nearest_thing.attractors.push(target)
-	
-	for thing in things
-		if thing.attractors.length >= 1
-			if Math.random() < 0.1
-				new_thing = new Thing(thing)
-				new_thing.angle += rand(-1, 1) / 2
-				new_thing.angular_speed += rand(-1, 1) / 2
-				things.push(new Thing(new_thing))
 
-t = 0
+bg_color = [rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1]
 @draw = (gl)->
-	if t++ is 0
-		gl.clearColor(rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1)
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	gl.clearColor(bg_color...)
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	
 	for target in targets
 		# gl.color(1, 1, 1, 1)
@@ -200,4 +191,4 @@ t = 0
 		# if rand() < 0.1
 		# 	reticle(gl, target.x, target.y, 0, rand(0, 0.5), 5, t/15.2*(not target.reached))
 	
-	thing.draw(gl) for thing in things
+	thing.draw(gl) for thing in branches
