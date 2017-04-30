@@ -85,9 +85,14 @@ class Thing
 		# tri(gl, @x, @y, @z, 0.1 * Math.random(), 0.1 + 0.1 * Math.random(), @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @width, 0.1, @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @width, 0.1, @angle + Math.PI)
-		gl.color(0, 0, 0, 1)
+		# gl.color(0.5, 1, 1, 1)
+		# gl.vertex(@x, @y, @z)
+		# gl.color(1, 0.8, 0.1, 1)
+		# gl.vertex(@x+1, @y, @z)
+		# gl.color(0.2, 1, 1, 1)
+		# gl.vertex(@x-1, @y+1, @z)
 		# segment(gl, @x, @y, @z - 0.00009, 0.11 * @width, 0.1, @angle)
-		segment(gl, @x, @y, @z - 0.01, 1.1 * @width, 0.1, @angle)
+		segment(gl, @x, @y, @z - 0.1, 1.1 * @width, 0.1, @angle)
 		gl.color((@y + @z) / 5 + @x / 10, (@x + @y / 2 + @z) / 5, @z + @x / 3, 1)
 		segment(gl, @x, @y, @z, @width, 0.1, @angle)
 		gl.end()
@@ -101,8 +106,13 @@ for i in [-9..9]
 	# things.push new Thing({x: +i, y: +i, vy: +0.01, vx: -0.01, width})
 	# things.push new Thing({x: -i, y: +i, vy: -0.01, vx: -0.01, width})
 	# things.push new Thing({x: +i, y: +i, vy: -0.01, vx: +0.01, width})
-	things.push new Thing({x: -i-5, y: i-5, vy: +0.01, vx: +0.01, width})
-	things.push new Thing({x: +i+5, y: i-5, vy: +0.01, vx: -0.01, width})
+	
+	if rand() < 0.7
+		things.push new Thing({x: -i-5, y: i-5, vy: +0.01, vx: +0.01, width})
+		things.push new Thing({x: +i+5, y: i-5, vy: +0.01, vx: -0.01, width})
+	else
+		things.push new Thing({x: -i-5, y: i-5, vy: +0.01, vx: +0.01, width: rand(0.01, 0.6)})
+		things.push new Thing({x: +i+5, y: i-5, vy: +0.01, vx: -0.01, width: rand(0.01, 0.6)})
 
 t = 0
 do @update = ->

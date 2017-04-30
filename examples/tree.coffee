@@ -73,6 +73,8 @@ space_to_colonize =
 	x: 0
 	y: 2
 
+attract_dist = 1
+
 targets = []
 
 for [0..100]
@@ -94,16 +96,46 @@ for [0..100]
 	# 		y: space_to_colonize.y + y
 	# 	})
 
-nearestTargetTo = (x, y)->
-	closest_dist = Infinity
-	closest_target = null
-	for target in targets when not target.reached
-		target_dist = dist(target.x, target.y, x, y) 
-		if target_dist < closest_dist
-			closest_dist = target_dist
-			closest_target = target
-	closest_target
+# nearestTargetTo = (x, y)->
+# 	closest_dist = Infinity
+# 	closest_target = null
+# 	for target in targets when not target.reached
+# 		target_dist = dist(target.x, target.y, x, y) 
+# 		if target_dist < closest_dist
+# 			closest_dist = target_dist
+# 			closest_target = target
+# 	closest_target
 
+# targets_within_dist = (x, y, max_dist)->
+# 	attractors = []
+# 	for target in targets
+# 		unless target.reached
+# 			target_dist = dist(target.x, target.y, x, y) 
+# 			if target_dist < attract_dist
+# 				attractors.push(target)
+# 	attractors
+
+# window.average_point = (points)->
+# 	return if points.length < 1
+# 	x_acc = 0
+# 	y_acc = 0
+# 	for point in points
+# 		x_acc += point.x
+# 		y_acc += point.y
+# 	x: x_acc / points.length
+# 	y: y_acc / points.length
+# 	# x: x_acc / Math.max(1, points.length)
+# 	# y: y_acc / Math.max(1, points.length)
+
+nearest = (points, x, y)->
+	closest_dist = Infinity
+	closest_point = null
+	for point in points
+		point_dist = dist(point.x, point.y, x, y) 
+		if point_dist < closest_dist
+			closest_dist = point_dist
+			closest_point = point
+	closest_point
 
 class Thing
 	constructor: (props={})->
@@ -117,10 +149,15 @@ class Thing
 		@life = 5
 		@[k] = v for k, v of props
 		@t = 0
+		@attractors = []
 	
-	findTarget: ->
-		a = 3
-		nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
+	# findTarget: ->
+		# a = 3
+		# nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
+		
+		# attractors = targets_within_dist(@x, @y, attract_dist)
+		# @target = average_point(attractors)
+		
 	
 	update: ->
 		return if @life < 0
@@ -134,11 +171,12 @@ class Thing
 			if dist(target.x, target.y, @x, @y) < 0.1
 				target.reached = yes
 		
-		if @target?.reached
-			@target = null
+		# if @target?.reached
+		# 	@target = null
 		
-		if rand() < 0.01 or not @target
-			@target = @findTarget()
+		# if rand() < 0.01 or not @target
+		# 	@target = @findTarget()
+		# @findTarget()
 		
 		# @angular_speed += (Math.random() - 0.5) / 50
 		# @angular_speed *= 0.99
@@ -159,21 +197,29 @@ class Thing
 		# 	@x += (@target.x - @x) / dist_to_target * amount
 		# 	@y += (@target.y - @y) / dist_to_target * amount
 		
-		dx = @x - prev_x
-		dy = @y - prev_y
+		# dx = @x - prev_x
+		# dy = @y - prev_y
 		
-		if @target?
-			dist_to_target = dist(@target.x, @target.y, @x, @y)
+		attract_x_acc = 0
+		attract_y_acc = 0
+		
+		# attractors = targets_within_dist(@x, @y, attract_dist)
+		for target in @attractors
+			# dist_to_target = dist(target.x, target.y, @x, @y)
 			# @angle = -Math.atan2(@target.y - @y, @target.x - @x) + Math.PI / 2
 			# @angle = Math.atan2(@target.y - @y, @target.x - @x) - Math.PI / 2
-			amount = 0.1
-			dx += (@target.x - @x) / dist_to_target * amount
-			dy += (@target.y - @y) / dist_to_target * amount
+			# amount = 5
+			# dx += (target.x - @x) / dist_to_target * amount
+			# dy += (target.y - @y) / dist_to_target * amount
+			attract_x_acc += (target.x - @x)
+			attract_y_acc += (target.y - @y)
 		
 		# @angle = -Math.atan2(-dy, -dx) - Math.PI / 2
 		# dx = prev_x - @x
 		# dy = prev_y - @y
-		@angle = Math.PI / 2 - Math.atan2(dy, dx)
+		# @angle = Math.PI / 2 - Math.atan2(dy, dx)
+		if @attractors.length > 0
+			@angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
 	
 	draw: (gl)->
 		gl.begin(gl.TRIANGLES)
@@ -181,9 +227,11 @@ class Thing
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
 		# tri(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle + Math.PI)
 		gl.color(0, 0, 0, 1)
-		segment(gl, @x, @y, @z - 0.00009, 0.11 * @life, 0.1, @angle)
+		# segment(gl, @x, @y, @z - 0.00009, 0.11 * @life, 0.1, @angle)
+		segment(gl, @x, @y, @z - 0.00009, 0.11, 0.1, @angle)
 		gl.color(1, 1, 1, 1)
-		segment(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
+		# segment(gl, @x, @y, @z, 0.1 * @life, 0.1, @angle)
+		segment(gl, @x, @y, @z, 0.1, 0.1, @angle)
 		gl.end()
 
 
@@ -193,30 +241,47 @@ things = [new Thing(y: -4)]
 	thing.update() for thing in things
 	
 	for thing in things
+		thing.attractors = []
+	
+	for target in targets when not target.reached
+		# for thing in things
+		# 	
+		nearest_thing = nearest(things, target.x, target.y)
+		if nearest_thing?
+			if dist(nearest_thing.x, nearest_thing.y, target.x, target.y) < attract_dist
+				nearest_thing.attractors.push(target)
+	
+	for thing in things
 		# if Math.random() < 0.1 and thing.life > 0.2
-		if thing.t * 10 > thing.life ** 4 and thing.life > 2
-			thing.life /= 2
-			thing_a = new Thing(thing)
-			thing_b = new Thing(thing)
-			thing_a.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-			thing_a.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-			thing_b.x += Math.sin(thing.angle + Math.PI / 2) * thing.life * 0.1
-			thing_b.y += Math.cos(thing.angle + Math.PI / 2) * thing.life * 0.1
-			thing_a.angular_speed -= (Math.random() - 0.2) / 15
-			thing_b.angular_speed += (Math.random() - 0.2) / 15
-			things.push(new Thing(thing_a))
-			things.push(new Thing(thing_b))
-			thing.life = 0
-		if Math.random() < 0.1 and 3 > thing.life > 0.2
-		# if ??? and 3 > thing.life > 0.2
-			new_thing = new Thing(thing)
-			# new_thing.life -= 1
-			new_thing.life *= 0.8
-			# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-			# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-			new_thing.angle = thing.angle + rand(-1, 1) / 2
-			new_thing.angular_speed = rand(-1, 1) / 30
-			things.push(new Thing(new_thing))
+		# if thing.t * 10 > thing.life ** 4 and thing.life > 2
+		# 	thing.life /= 2
+		# 	thing_a = new Thing(thing)
+		# 	thing_b = new Thing(thing)
+		# 	thing_a.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
+		# 	thing_a.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
+		# 	thing_b.x += Math.sin(thing.angle + Math.PI / 2) * thing.life * 0.1
+		# 	thing_b.y += Math.cos(thing.angle + Math.PI / 2) * thing.life * 0.1
+		# 	thing_a.angular_speed -= (Math.random() - 0.2) / 15
+		# 	thing_b.angular_speed += (Math.random() - 0.2) / 15
+		# 	things.push(thing_a)
+		# 	things.push(thing_b)
+		# 	thing.life = 0
+		# if Math.random() < 0.1 and 3 > thing.life > 0.2
+		# # if ??? and 3 > thing.life > 0.2
+		# 	new_thing = new Thing(thing)
+		# 	# new_thing.life -= 1
+		# 	new_thing.life *= 0.8
+		# 	# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
+		# 	# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
+		# 	new_thing.angle = thing.angle + rand(-1, 1) / 2
+		# 	new_thing.angular_speed = rand(-1, 1) / 30
+		# 	things.push(new_thing)
+		if thing.attractors.length >= 1
+			if Math.random() < 0.1
+				new_thing = new Thing(thing)
+				new_thing.angle += rand(-1, 1) / 2
+				new_thing.angular_speed += rand(-1, 1) / 2
+				things.push(new Thing(new_thing))
 
 t = 0
 @draw = (gl)->
