@@ -24,9 +24,6 @@ reticle = (gl, x, y, z, r, tris=5, offset_angle=0)->
 
 circle = (gl, x, y, z, r, points=3*5)->
 	gl.begin(gl.TRIANGLE_FAN)
-	# gl.begin(gl.POLYGON)
-	# gl.polygonMode(gl.FRONT_AND_BACK, gl.FILL)
-	# for angle in [0..Math.PI*2] by Math.PI*2/points
 	for i in [0..points]
 		angle = Math.PI * 2 * i / points
 		gl.vertex(
@@ -87,45 +84,6 @@ for [0..100]
 			z: 0
 			reached: no
 		})
-	
-	# x = rand(-space_to_colonize.xr, space_to_colonize.xr)
-	# y = rand(-space_to_colonize.yr, space_to_colonize.yr)
-	# if
-	# 	targets.push({
-	# 		x: space_to_colonize.x + x
-	# 		y: space_to_colonize.y + y
-	# 	})
-
-# nearestTargetTo = (x, y)->
-# 	closest_dist = Infinity
-# 	closest_target = null
-# 	for target in targets when not target.reached
-# 		target_dist = dist(target.x, target.y, x, y) 
-# 		if target_dist < closest_dist
-# 			closest_dist = target_dist
-# 			closest_target = target
-# 	closest_target
-
-# targets_within_dist = (x, y, max_dist)->
-# 	attractors = []
-# 	for target in targets
-# 		unless target.reached
-# 			target_dist = dist(target.x, target.y, x, y) 
-# 			if target_dist < attract_dist
-# 				attractors.push(target)
-# 	attractors
-
-# window.average_point = (points)->
-# 	return if points.length < 1
-# 	x_acc = 0
-# 	y_acc = 0
-# 	for point in points
-# 		x_acc += point.x
-# 		y_acc += point.y
-# 	x: x_acc / points.length
-# 	y: y_acc / points.length
-# 	# x: x_acc / Math.max(1, points.length)
-# 	# y: y_acc / Math.max(1, points.length)
 
 nearest = (points, x, y)->
 	closest_dist = Infinity
@@ -151,14 +109,6 @@ class Thing
 		@t = 0
 		@attractors = []
 	
-	# findTarget: ->
-		# a = 3
-		# nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
-		
-		# attractors = targets_within_dist(@x, @y, attract_dist)
-		# @target = average_point(attractors)
-		
-	
 	update: ->
 		return if @life < 0
 		@life -= 0.03 * Math.random()
@@ -171,13 +121,6 @@ class Thing
 			if dist(target.x, target.y, @x, @y) < 0.1
 				target.reached = yes
 		
-		# if @target?.reached
-		# 	@target = null
-		
-		# if rand() < 0.01 or not @target
-		# 	@target = @findTarget()
-		# @findTarget()
-		
 		# @angular_speed += (Math.random() - 0.5) / 50
 		# @angular_speed *= 0.99
 		# @angle += @angular_speed
@@ -185,39 +128,19 @@ class Thing
 		prev_y = @y
 		@x += Math.sin(@angle) * @speed
 		@y += Math.cos(@angle) * @speed
-		@y += 0.001
 		@z += @z_speed
-		# @x += 0.01
-		
-		# if @target?
-		# 	dist_to_target = dist(@target.x, @target.y, @x, @y)
-		# 	# @angle = -Math.atan2(@target.y - @y, @target.x - @x) + Math.PI / 2
-		# 	# @angle = Math.atan2(@target.y - @y, @target.x - @x) - Math.PI / 2
-		# 	amount = 0.01
-		# 	@x += (@target.x - @x) / dist_to_target * amount
-		# 	@y += (@target.y - @y) / dist_to_target * amount
-		
-		# dx = @x - prev_x
-		# dy = @y - prev_y
 		
 		attract_x_acc = 0
 		attract_y_acc = 0
 		
-		# attractors = targets_within_dist(@x, @y, attract_dist)
 		for target in @attractors
-			# dist_to_target = dist(target.x, target.y, @x, @y)
-			# @angle = -Math.atan2(@target.y - @y, @target.x - @x) + Math.PI / 2
-			# @angle = Math.atan2(@target.y - @y, @target.x - @x) - Math.PI / 2
-			# amount = 5
-			# dx += (target.x - @x) / dist_to_target * amount
-			# dy += (target.y - @y) / dist_to_target * amount
 			attract_x_acc += (target.x - @x)
 			attract_y_acc += (target.y - @y)
+			# another possibility:
+			# dist_to_target = dist(target.x, target.y, @x, @y)
+			# attract_x_acc += (target.x - @x) / dist_to_target
+			# attract_y_acc += (target.y - @y) / dist_to_target
 		
-		# @angle = -Math.atan2(-dy, -dx) - Math.PI / 2
-		# dx = prev_x - @x
-		# dy = prev_y - @y
-		# @angle = Math.PI / 2 - Math.atan2(dy, dx)
 		if @attractors.length > 0
 			@angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
 	
@@ -244,38 +167,12 @@ things = [new Thing(y: -4)]
 		thing.attractors = []
 	
 	for target in targets when not target.reached
-		# for thing in things
-		# 	
 		nearest_thing = nearest(things, target.x, target.y)
 		if nearest_thing?
 			if dist(nearest_thing.x, nearest_thing.y, target.x, target.y) < attract_dist
 				nearest_thing.attractors.push(target)
 	
 	for thing in things
-		# if Math.random() < 0.1 and thing.life > 0.2
-		# if thing.t * 10 > thing.life ** 4 and thing.life > 2
-		# 	thing.life /= 2
-		# 	thing_a = new Thing(thing)
-		# 	thing_b = new Thing(thing)
-		# 	thing_a.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-		# 	thing_a.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-		# 	thing_b.x += Math.sin(thing.angle + Math.PI / 2) * thing.life * 0.1
-		# 	thing_b.y += Math.cos(thing.angle + Math.PI / 2) * thing.life * 0.1
-		# 	thing_a.angular_speed -= (Math.random() - 0.2) / 15
-		# 	thing_b.angular_speed += (Math.random() - 0.2) / 15
-		# 	things.push(thing_a)
-		# 	things.push(thing_b)
-		# 	thing.life = 0
-		# if Math.random() < 0.1 and 3 > thing.life > 0.2
-		# # if ??? and 3 > thing.life > 0.2
-		# 	new_thing = new Thing(thing)
-		# 	# new_thing.life -= 1
-		# 	new_thing.life *= 0.8
-		# 	# new_thing.x += Math.sin(thing.angle - Math.PI / 2) * thing.life * 0.1
-		# 	# new_thing.y += Math.cos(thing.angle - Math.PI / 2) * thing.life * 0.1
-		# 	new_thing.angle = thing.angle + rand(-1, 1) / 2
-		# 	new_thing.angular_speed = rand(-1, 1) / 30
-		# 	things.push(new_thing)
 		if thing.attractors.length >= 1
 			if Math.random() < 0.1
 				new_thing = new Thing(thing)
@@ -288,11 +185,6 @@ t = 0
 	if t++ is 0
 		gl.clearColor(rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1)
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	
-	# gl.rotate(30, 1, 0, 0)
-	# gl.begin(gl.TRIANGLES)
-	# tri(gl, 0, 0, 0, 1, 2, 20)
-	# gl.end()
 	
 	for target in targets
 		# gl.color(1, 1, 1, 1)
