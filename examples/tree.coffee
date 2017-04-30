@@ -7,8 +7,8 @@ lerp = (a, b, b_ness)->
 rand = (a=1, b=0)->
 	lerp(a, b, Math.random())
 
-dist = (x1, y1, x2, y2)->
-	Math.hypot(x2-x1, y2-y1)
+dist3d = (x1, y1, z1, x2, y2, z2)->
+	Math.hypot(x2-x1, y2-y1, z2-z1)
 
 reticle = (gl, x, y, z, r, tris=5, offset_angle=0)->
 	points = tris * 3
@@ -67,8 +67,10 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 space_to_colonize =
 	xr: 4
 	yr: 2
+	zr: 4
 	x: 0
 	y: 2
+	z: 0
 
 attract_dist = Infinity
 
@@ -77,19 +79,20 @@ targets = []
 for [0..100]
 	x = rand(-1, 1)
 	y = rand(-1, 1)
-	if dist(x, y, 0, 0) < 1
+	z = rand(-1, 1)
+	if dist3d(x, y, z, 0, 0, 0) < 1
 		targets.push({
 			x: space_to_colonize.x + x * space_to_colonize.xr
 			y: space_to_colonize.y + y * space_to_colonize.yr
-			z: 0
+			z: space_to_colonize.z + z * space_to_colonize.zr
 			reached: no
 		})
 
-nearest = (points, x, y)->
+nearest = (points, x, y, z)->
 	closest_dist = Infinity
 	closest_point = null
 	for point in points
-		point_dist = dist(point.x, point.y, x, y) 
+		point_dist = dist3d(point.x, point.y, point.z, x, y, z)
 		if point_dist < closest_dist
 			closest_dist = point_dist
 			closest_point = point
@@ -101,45 +104,31 @@ class Branch
 		@y = 0
 		@z = 0
 		@angle = 0
-		# @speed = 0.05
-		# @angular_speed = 0
-		# @z_speed = (Math.random() * 2 - 1) / 5
-		# @life = 5
 		@[k] = v for k, v of props
 		@attractors = []
 	
 	update: ->
-		# return if @life < 0
-		# @life -= 0.03 * Math.random()
-		
 		for target in targets
-			if dist(target.x, target.y, @x, @y) < 0.1
+			if dist3d(target.x, target.y, target.z, @x, @y, @z) < 0.1
 				target.reached = yes
-		
-		# @angular_speed += (Math.random() - 0.5) / 50
-		# @angular_speed *= 0.99
-		# @angle += @angular_speed
-		# @x += Math.sin(@angle) * @speed
-		# @y += Math.cos(@angle) * @speed
-		# @z += @z_speed
 		
 		attract_x_acc = 0
 		attract_y_acc = 0
+		attract_z_acc = 0
 		
 		for target in @attractors
-			attract_x_acc += (target.x - @x)
-			attract_y_acc += (target.y - @y)
-			# another possibility:
-			# dist_to_target = dist(target.x, target.y, @x, @y)
-			# attract_x_acc += (target.x - @x) / dist_to_target
-			# attract_y_acc += (target.y - @y) / dist_to_target
+			dist_to_target = dist3d(target.x, target.y, target.z, @x, @y, @z)
+			attract_x_acc += (target.x - @x) / dist_to_target
+			attract_y_acc += (target.y - @y) / dist_to_target
+			attract_z_acc += (target.z - @z) / dist_to_target
 		
 		if @attractors.length > 0
-			angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
 			branch_length = 0.05
-			x = @x + Math.sin(angle) * branch_length
-			y = @y + Math.cos(angle) * branch_length
-			new_thing = new Branch({x, y, angle, parent: @})
+			@angle = Math.PI / 2 - Math.atan2(attract_y_acc, attract_x_acc)
+			x = @x + attract_x_acc / @attractors.length * branch_length
+			y = @y + attract_y_acc / @attractors.length * branch_length
+			z = @z + attract_z_acc / @attractors.length * branch_length
+			new_thing = new Branch({x, y, z, @angle, parent: @})
 			
 			branches.push(new_thing)
 	
@@ -161,21 +150,27 @@ root_branch = new Branch(y: -4)
 branches = [root_branch]
 
 @update = ->
-	thing.update() for thing in branches
-	
 	for thing in branches
 		thing.attractors = []
 	
 	for target in targets when not target.reached
-		nearest_thing = nearest(branches, target.x, target.y)
+		nearest_thing = nearest(branches, target.x, target.y, target.z)
 		if nearest_thing?
-			if dist(nearest_thing.x, nearest_thing.y, target.x, target.y) < attract_dist
+			if dist3d(nearest_thing.x, nearest_thing.y, nearest_thing.z, target.x, target.y, target.z) < attract_dist
 				nearest_thing.attractors.push(target)
+	
+	thing.update() for thing in branches
 
 bg_color = [rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1]
+t = 0
 @draw = (gl)->
 	gl.clearColor(bg_color...)
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+	
+	t += 1
+	# gl.rotate(20, 0, 0, 1)
+	# gl.rotate(t, 0, 1, 0)
+	# gl.rotate(20, 0, 0, 1)
 	
 	for target in targets
 		# gl.color(1, 1, 1, 1)
@@ -185,7 +180,7 @@ bg_color = [rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1]
 		else
 			gl.color(1, 0, 0, 1)
 		# reticle(gl, target.x, target.y, target.reached, 0.2, 5)
-		circle(gl, target.x, target.y, target.reached, 0.1)
+		circle(gl, target.x, target.y, target.z, 0.1)
 		# reticle(gl, target.x, target.y, 0, 0.1, 5, t/15.2*(not target.reached))
 		# reticle(gl, target.x, target.y, target.reached, rand(0, 0.5), 5)
 		# if rand() < 0.1
