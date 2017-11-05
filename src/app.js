@@ -4,7 +4,7 @@ const semver = require("semver")
 const is_png = require("is-png")
 const {inject_metadata, read_metadata} = require("./png-metadata.js")
 
-const API_VERSION = "0.2.0"
+const API_VERSION = "0.2.1"
 const API_VERSION_RANGE = "~" + semver.major(API_VERSION) + "." + semver.minor(API_VERSION)
 
 var program_source
@@ -60,7 +60,7 @@ var init_gl = function() {
 	gl.ondraw = function() {
 		if (program_context && program_context.draw) {
 			gl.loadIdentity()
-			gl.translate(0, 0, camera_z)
+			gl.translate(camera_x, camera_y, camera_z)
 			// gl should probably just be global for the program
 			// or at least there should be an init method you can define that also gets gl
 			program_context.draw(gl)
@@ -228,6 +228,8 @@ export_button.addEventListener("click", function() {
 		"Program Inputs": JSON.stringify({
 			t: t,
 			seed: seed,
+			// could include a flag for whether a program uses immediate mode or not,
+			// or whether it used a fixed timestamp
 			view: {
 				// can use "fov" to indicate perspective projection
 				// maybe it should be canvas width/height and fov/zoom
