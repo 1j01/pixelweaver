@@ -15,9 +15,10 @@ var seed = seed_gen()
 
 var slider = document.getElementById("animation-position")
 var container = document.getElementById("animation-container")
-var export_button = document.querySelector("#export")
-var reseed_button = document.querySelector("#reseed")
-var play_pause_button = document.querySelector("#play-pause")
+var source_button = document.getElementById("show-source")
+var export_button = document.getElementById("export")
+var reseed_button = document.getElementById("reseed")
+var play_pause_button = document.getElementById("play-pause")
 var play_pause_icon = document.querySelector("#play-pause .material-icons")
 
 componentHandler.upgradeElement(slider)
@@ -213,12 +214,7 @@ require("visibility-change-ponyfill")(function() {
 	}
 })
 
-play_pause_button.addEventListener("click", play_pause)
-
-export_button.addEventListener("click", function() {
-	var a = document.createElement("a")
-	a.download = "export.png"
-	
+var collect_metadata = function(){
 	var metadata = {
 		"Software": "ink-dangle", // TODO: a better name
 		"API Version": API_VERSION,
@@ -226,7 +222,7 @@ export_button.addEventListener("click", function() {
 		"Program Source": program_source.replace(/\r\n/g, "\n"),
 		"Program Language": "text/coffeescript",
 		"Program Inputs": JSON.stringify({
-			t: t,
+			t: t, // TODO: rename to "time"
 			seed: seed,
 			// could include a flag for whether a program uses immediate mode or not,
 			// or whether it used a fixed timestamp
@@ -249,6 +245,41 @@ export_button.addEventListener("click", function() {
 	if (author_tag_match) {
 		metadata["Author"] = author_tag_match[1]
 	}
+	return metadata;
+};
+
+play_pause_button.addEventListener("click", play_pause)
+
+// TODO: specific selectors
+var dialog = document.querySelector('dialog');
+var showDialogButton = document.querySelector('#show-dialog');
+if (! dialog.showModal) {
+  dialogPolyfill.registerDialog(dialog);
+}
+dialog.querySelector('.close').addEventListener('click', function() {
+  dialog.close();
+});
+
+source_button.addEventListener("click", function() {
+	pause();
+
+	// var metadata = collect_metadata();
+	// delete metadata["Program Source"];
+
+	var data_dump_el = document.getElementById("source-data");
+	
+	// data_dump_el.textContent = JSON.stringify(metadata, null, 2);
+	data_dump_el.textContent = program_source;
+	
+	dialog.showModal();	
+});
+
+export_button.addEventListener("click", function() {
+	var a = document.createElement("a")
+	a.download = "export.png"
+	
+	var metadata = collect_metadata();
+	
 	console.log("Export PNG with metadata", metadata)
 	
 	canvas.toBlob(function(blob) {
@@ -431,6 +462,7 @@ var init_program = function() {
 
 var run_program_from_source = function(source) {
 	program_source = source
+	window.code_for_copying = source
 	init_program()
 	play()
 }
