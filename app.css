@@ -31,3 +31,22 @@ body {
 	background: #424242;
 	overflow: auto;
 }
+
+#show-source-dialog {
+	width: 80vw;
+	height: 80vh;
+}
+.mdl-dialog-flex-wrapper {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+}
+.mdl-dialog__title,
+.mdl-dialog__actions {
+	flex: 0 0 auto;
+}
+.mdl-dialog__content {
+	flex: 1;
+	overflow: auto;
+}

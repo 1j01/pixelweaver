@@ -15,9 +15,10 @@ var seed = seed_gen()
 
 var slider = document.getElementById("animation-position")
 var container = document.getElementById("animation-container")
-var export_button = document.querySelector("#export")
-var reseed_button = document.querySelector("#reseed")
-var play_pause_button = document.querySelector("#play-pause")
+var source_button = document.getElementById("show-source")
+var export_button = document.getElementById("export")
+var reseed_button = document.getElementById("reseed")
+var play_pause_button = document.getElementById("play-pause")
 var play_pause_icon = document.querySelector("#play-pause .material-icons")
 
 componentHandler.upgradeElement(slider)
@@ -109,7 +110,7 @@ var maybe_make_checkpoint = function() {
 
 var clear_checkpoints = function() {
 	checkpoints = []
-	// might want to release ImageBitmaps here later
+	// might want to release ImageBitmaps here in the future
 }
 
 var simulate_to = function(new_t) {
@@ -213,12 +214,7 @@ require("visibility-change-ponyfill")(function() {
 	}
 })
 
-play_pause_button.addEventListener("click", play_pause)
-
-export_button.addEventListener("click", function() {
-	var a = document.createElement("a")
-	a.download = "export.png"
-	
+var collect_metadata = function(){
 	var metadata = {
 		"Software": "ink-dangle", // TODO: a better name
 		"API Version": API_VERSION,
@@ -226,7 +222,7 @@ export_button.addEventListener("click", function() {
 		"Program Source": program_source.replace(/\r\n/g, "\n"),
 		"Program Language": "text/coffeescript",
 		"Program Inputs": JSON.stringify({
-			t: t,
+			t: t, // TODO: rename to "time"
 			seed: seed,
 			// could include a flag for whether a program uses immediate mode or not,
 			// or whether it used a fixed timestamp
@@ -249,6 +245,67 @@ export_button.addEventListener("click", function() {
 	if (author_tag_match) {
 		metadata["Author"] = author_tag_match[1]
 	}
+	return metadata
+};
+
+play_pause_button.addEventListener("click", play_pause)
+
+var dialog = document.getElementById('show-source-dialog')
+if (!dialog.showModal) {
+	// TODO: include polyfill
+	dialogPolyfill.registerDialog(dialog)
+}
+dialog.querySelector('.close').addEventListener('click', function() {
+	dialog.close()
+})
+
+source_button.addEventListener("click", function() {
+	pause();
+
+	var metadata = collect_metadata();
+	delete metadata["Program Source"];
+	metadata["Program Inputs"] = JSON.parse(metadata["Program Inputs"]);
+
+	var metadata_el = document.getElementById("metadata");
+	var program_source_el = document.getElementById("program-source");
+	
+	metadata_el.value = JSON.stringify(metadata, null, 2);
+	program_source_el.value = program_source;
+	
+	var metadata_ace_el = document.getElementById("metadata-ace");
+	var program_source_ace_el = document.getElementById("program-source-ace");
+
+	var editor = ace.edit(metadata_ace_el);
+	editor.setTheme("ace/theme/dreamweaver");
+	editor.getSession().setMode("ace/mode/javascript");
+	editor.getSession().setValue(metadata_el.value);
+	editor.setOptions({
+		readOnly: true,
+		maxLines: 100,
+	});
+	metadata_ace_el.style.height = "500px";
+	metadata_el.style.display = "none";
+
+	var editor = ace.edit(program_source_ace_el);
+	editor.setTheme("ace/theme/dreamweaver");
+	editor.getSession().setMode("ace/mode/coffee");
+	editor.getSession().setValue(program_source_el.value);
+	editor.setOptions({
+		readOnly: true,
+		maxLines: 150,
+	});
+	program_source_ace_el.style.height = "500px";
+	program_source_el.style.display = "none";
+	
+	dialog.showModal();	
+});
+
+export_button.addEventListener("click", function() {
+	var a = document.createElement("a")
+	a.download = "export.png"
+	
+	var metadata = collect_metadata();
+	
 	console.log("Export PNG with metadata", metadata)
 	
 	canvas.toBlob(function(blob) {
@@ -269,12 +326,11 @@ reseed_button.addEventListener("click", function() {
 })
 
 var load_program = function(source, metadata) {
+	// XXX: avoiding shadowing program_source variable
 	
 	if (metadata) {
 		console.log("Load program from metadata", metadata)
 		
-		// XXX: avoiding program_source variable name used above
-		// var source = metadata["Program Source"]
 		var api_version = metadata["API Version"]
 		
 		if (!source) {
@@ -348,6 +404,7 @@ var load_program_from_file = function(file) {
 		var uint8_array = new Uint8Array(array_buffer)
 		if (is_png(uint8_array)) {
 			var metadata = read_metadata(uint8_array)
+			// XXX: avoiding shadowing program_source variable
 			var source = metadata["Program Source"]
 			load_program(source, metadata)
 		} else {
@@ -431,6 +488,7 @@ var init_program = function() {
 
 var run_program_from_source = function(source) {
 	program_source = source
+	window.code_for_copying = source
 	init_program()
 	play()
 }

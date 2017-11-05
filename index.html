@@ -11,15 +11,36 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.0/seedrandom.min.js"></script>
 		<script src="lib/lightgl.js"></script>
 		<script src="lib/coffee-script.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/mode-coffee.js"></script>
 	</head>
 	<body class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 		<header class="mdl-layout__header">
 			<div class="mdl-layout__header-row">
 				<button id="play-pause" class="mdl-button mdl-js-button mdl-button--icon mdl-button--primary"><i class="material-icons">play_arrow</i></button>
 				<input id="animation-position" class="mdl-slider mdl-js-slider" type="range" min="0" max="1000" value="0" tabindex="0">
+				<!-- TODO: show animation time as a number -->
 				<button id="reseed" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons">casino</i> Reseed</button>
 				<button id="export" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons">photo</i> Export</button>
+				<button id="show-source" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons">description</i> View Source</button>
+				<!-- possible icons: info-outline, code, description -->
 			</div>
+			<dialog class="mdl-dialog" id="show-source-dialog">
+				<div class="mdl-dialog-flex-wrapper">
+					<!-- <h4 class="mdl-dialog__title">Source Info</h4> -->
+					<div class="mdl-dialog__content">
+						<h5>Metadata</h5>
+						<textarea id="metadata"></textarea>
+						<div id="metadata-ace"></div>
+						<h5>Program source</h5>
+						<textarea id="program-source"></textarea>
+						<div id="program-source-ace"></div>
+					</div>
+					<div class="mdl-dialog__actions">
+						<button type="button" class="mdl-button close">Close</button>
+					</div>
+				</div>
+			</dialog>
 		</header>
 		<main id="animation-container"></main>
 		<script src="build/bundle.js"></script>
