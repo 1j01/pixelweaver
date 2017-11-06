@@ -110,7 +110,7 @@ var maybe_make_checkpoint = function() {
 
 var clear_checkpoints = function() {
 	checkpoints = []
-	// might want to release ImageBitmaps here later
+	// might want to release ImageBitmaps here in the future
 }
 
 var simulate_to = function(new_t) {
@@ -245,31 +245,57 @@ var collect_metadata = function(){
 	if (author_tag_match) {
 		metadata["Author"] = author_tag_match[1]
 	}
-	return metadata;
+	return metadata
 };
 
 play_pause_button.addEventListener("click", play_pause)
 
-// TODO: specific selectors
-var dialog = document.querySelector('dialog');
-var showDialogButton = document.querySelector('#show-dialog');
-if (! dialog.showModal) {
-  dialogPolyfill.registerDialog(dialog);
+var dialog = document.getElementById('show-source-dialog')
+if (!dialog.showModal) {
+	// TODO: include polyfill
+	dialogPolyfill.registerDialog(dialog)
 }
 dialog.querySelector('.close').addEventListener('click', function() {
-  dialog.close();
-});
+	dialog.close()
+})
 
 source_button.addEventListener("click", function() {
 	pause();
 
-	// var metadata = collect_metadata();
-	// delete metadata["Program Source"];
+	var metadata = collect_metadata();
+	delete metadata["Program Source"];
+	metadata["Program Inputs"] = JSON.parse(metadata["Program Inputs"]);
 
-	var data_dump_el = document.getElementById("source-data");
+	var metadata_el = document.getElementById("metadata");
+	var program_source_el = document.getElementById("program-source");
 	
-	// data_dump_el.textContent = JSON.stringify(metadata, null, 2);
-	data_dump_el.textContent = program_source;
+	metadata_el.value = JSON.stringify(metadata, null, 2);
+	program_source_el.value = program_source;
+	
+	var metadata_ace_el = document.getElementById("metadata-ace");
+	var program_source_ace_el = document.getElementById("program-source-ace");
+
+	var editor = ace.edit(metadata_ace_el);
+	editor.setTheme("ace/theme/dreamweaver");
+	editor.getSession().setMode("ace/mode/javascript");
+	editor.getSession().setValue(metadata_el.value);
+	editor.setOptions({
+		readOnly: true,
+		maxLines: 100,
+	});
+	metadata_ace_el.style.height = "500px";
+	metadata_el.style.display = "none";
+
+	var editor = ace.edit(program_source_ace_el);
+	editor.setTheme("ace/theme/dreamweaver");
+	editor.getSession().setMode("ace/mode/coffee");
+	editor.getSession().setValue(program_source_el.value);
+	editor.setOptions({
+		readOnly: true,
+		maxLines: 150,
+	});
+	program_source_ace_el.style.height = "500px";
+	program_source_el.style.display = "none";
 	
 	dialog.showModal();	
 });
@@ -300,12 +326,11 @@ reseed_button.addEventListener("click", function() {
 })
 
 var load_program = function(source, metadata) {
+	// XXX: avoiding shadowing program_source variable
 	
 	if (metadata) {
 		console.log("Load program from metadata", metadata)
 		
-		// XXX: avoiding program_source variable name used above
-		// var source = metadata["Program Source"]
 		var api_version = metadata["API Version"]
 		
 		if (!source) {
@@ -379,6 +404,7 @@ var load_program_from_file = function(file) {
 		var uint8_array = new Uint8Array(array_buffer)
 		if (is_png(uint8_array)) {
 			var metadata = read_metadata(uint8_array)
+			// XXX: avoiding shadowing program_source variable
 			var source = metadata["Program Source"]
 			load_program(source, metadata)
 		} else {

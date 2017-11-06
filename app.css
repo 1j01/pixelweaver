@@ -32,20 +32,21 @@ body {
 	overflow: auto;
 }
 
-dialog.mdl-dialog {
+#show-source-dialog {
 	width: 80vw;
 	height: 80vh;
 }
-dialog.mdl-dialog .mdl-dialog__content {
-	/* flex: 1;
-	dos */
+.mdl-dialog-flex-wrapper {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 	overflow: hidden;
 }
-dialog.mdl-dialog pre {
+.mdl-dialog__title,
+.mdl-dialog__actions {
+	flex: 0 0 auto;
+}
+.mdl-dialog__content {
 	flex: 1;
 	overflow: auto;
-	max-height: calc(100% - 150px);
-	/* max-height: calc(80vh - 300px); */
 }
