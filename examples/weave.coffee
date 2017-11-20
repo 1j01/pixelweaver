@@ -68,10 +68,6 @@ class Thing
 		@width = 0.5
 		@[k] = v for k, v of props
 	
-	findTarget: ->
-		a = 3
-		nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
-	
 	update: (t)->
 		# @vx += Math.sin(t/15) / 1500 * Math.sign(@vx)
 		# @vy += Math.cos(t/15) / 1500
@@ -130,10 +126,11 @@ rotate_arg_fns =
 				base_value + Math.sin(t / sine_period) * sine_amplitude
 
 @draw = (gl)->
-	if t++ is 0
+	if t is 0
 		gl.clearColor(rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1)
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	
+	t += 1
+
 	gl.translate(0, -5, 0)
 	
 	gl.rotate.apply(gl, (fn() for fn in rotate_arg_fns))

@@ -64,10 +64,6 @@ class Thing
 		@width = 5
 		@[k] = v for k, v of props
 	
-	findTarget: ->
-		a = 3
-		nearestTargetTo(@x + rand(-a, a), @y + rand(-a, a))
-	
 	update: (t)->
 		# @angular_speed += (Math.random() - 0.5) / 50
 		# @angular_speed *= 0.99
@@ -107,10 +103,11 @@ do @update = ->
 	thing.update(t) for thing in things
 
 @draw = (gl)->
-	if t++ is 0
+	if t is 0
 		gl.clearColor(rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1)
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	
+	t += 1
+
 	# gl.rotate(30, 1, 0, 0)
 	
 	thing.draw(gl) for thing in things
