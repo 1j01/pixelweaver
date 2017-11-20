@@ -216,7 +216,7 @@ require("visibility-change-ponyfill")(function() {
 
 var collect_metadata = function(){
 	var metadata = {
-		"Software": "ink-dangle", // TODO: a better name
+		"Software": "Pixelweaver", // TODO: a better name
 		"API Version": API_VERSION,
 		"Creation Time": new Date().toUTCString(),
 		"Program Source": program_source.replace(/\r\n/g, "\n"),

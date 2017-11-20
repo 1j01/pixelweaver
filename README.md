@@ -1,9 +1,9 @@
 
-# Procbrush
+# Pixelweaver
 
-Procbrush is a **reproducible procedural drawing** tool.
+Pixelweaver is a **reproducible procedural drawing** tool.
 It gives you controls to scrub through time,
-despite using an immediate mode drawing paradigm.
+without retricting you to drawing each frame from some small state object.
 Images saved with the Export button
 <!-- embed all the data needed to reproduce the state at which they were captured -->
 can be loaded back into the app with drag and drop
@@ -23,7 +23,7 @@ And you can save other screenshots, which will also embed all the data needed to
 **Warning:** loading a program (including via screenshot) is totally **unsandboxed** for now!
 (But as long as it's your own code you're loading, you don't have to worry about that.)
 
-Procbrush is currently focused around an [immediate mode] drawing paradigm on a 3D canvas
+Pixelweaver is currently focused around an [immediate mode] drawing paradigm on a 3D canvas
 in contrast to the usual [retained mode] for 3D, such as with a [scene graph].
 
 
@@ -64,20 +64,30 @@ and potentially a minimap for navigation as well.
 
 ## Usage
 
-Currently there's no integrated code editor;
-I'm just live-reloading the app and having the app load a default program from [`examples`].
+I'm not sure what sort of form this project should ultimately take,
+whether it should be a plugin to a code editor, a library, or both,
+but...
+
+For now, you need [Node.js] and you have to [clone the repo],
+and then open a terminal/command prompt and run `npm install`.
+Then you can run `npm start`, which will start up a server and open up a page in your browser
+which will reload when you edit your program,
+or make changes to Pixelweaver itself.
+
+You can change the default program that's loaded from [`examples`](./examples) near the bottom of [`app.js`](./src/app.js).
 Programs are currently written in [Coffeescript], because I like CoffeeScript.
 Ultimately you should be able to use JavaScript or [any language that compiles to it][compile-to-JS langs].
 
-This could be a web app, or maybe a plugin for a code fiddling app.
-For now, you need [Node.js] and you need to [clone the repo],
-and then you can open a terminal/command prompt and run `npm install` and `npm run dev`.
-This will start up a server and open up a page in your browser which will reload when you edit your program,
-and it will also let you make changes to Ink Dangle itself.
+Don't forget to put your name in the `@Author` line.
+You could leave mine and do a `+` if you want,
+based on how much you've changed it or whatever,
+ignoring helper functions because they're not important to the Art.
+(I don't know, maybe the examples shouldn't have an `@Author`...)
 
 ## API
 
 The API isn't exactly solid yet.
+(It's *versioned*, at least.)
 
 There are way more use cases for the functionality than I initially considered.
 Probably need to *invert control* somehow to allow for these possibilities.
@@ -102,13 +112,16 @@ There are no requirements that a program's state be JSON-serializable.
 You can even update state in `draw`, but that should really be done in `update`.
 
 
-You shouldn't use `setTimeout` or `setInterval`;
-I should probably prevent access to these,
-but I could provide `every` and `after` helpers
+You shouldn't use `setTimeout` or `setInterval`,
+`Date` or other timing functions.
+I could provide `every` and `after` helpers
 that operate on animation frame intervals.
-(`setTimeout` and `setInterval` are terrible names btw)
+(But you can already do these things by keeping a `time` variable
+and checking equality for scheduling a single event,
+or `time` modulo N for a repeating event.)
 
-You shouldn't use global variables either.
+And don't use global variables or `localStorage` or other obvious ways you could work around reproducibility.
+(That is, break it.)
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
@@ -116,7 +129,6 @@ You shouldn't use global variables either.
 [scene graph]: https://en.wikipedia.org/wiki/Scene_graph
 [lightgl.js]: https://github.com/evanw/lightgl.js/
 [standard metadata keywords]: https://www.w3.org/TR/PNG-Chunks.html#C.Summary-of-standard-chunks
-[`examples`]: ./examples
 [Node.js]: https://nodejs.org/
 [Coffeescript]: http://coffeescript.org/
 [compile-to-JS langs]: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js

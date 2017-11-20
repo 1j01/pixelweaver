@@ -1,23 +1,31 @@
 {
-  "name": "ink-dangle",
+  "name": "pixelweaver",
   "version": "0.0.0",
-  "description": "reproducible procedural drawing tool",
+  "description": "Reproducible procedural drawing tool",
   "author": "Isaiah Odhner <isaiahodhner@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/1j01/ink-dangle.git"
+    "url": "http://github.com/1j01/pixelweaver.git"
   },
   "bugs": {
-    "url": "http://github.com/1j01/ink-dangle/issues"
+    "url": "http://github.com/1j01/pixelweaver/issues"
   },
   "keywords": [
+    "pixel",
+    "weave",
+    "reproducible",
     "canvas",
     "art",
+    "graphics",
     "ink",
+    "depth",
     "3d",
     "2d",
     "doodle",
+    "doodling",
+    "code-doodle",
+    "code-doodling",
     "drawing",
     "design",
     "fandangle",
@@ -31,7 +39,7 @@
   "scripts": {
     "build": "webpack src/app.js build/bundle.js --display-error-details",
     "watch": "webpack src/app.js build/bundle.js -d --watch --display-error-details",
-    "dev": "parallelshell \"webpack src/app.js build/bundle.js -d --watch --display-error-details\" \"live-server\""
+    "start": "parallelshell \"webpack src/app.js build/bundle.js -d --watch --display-error-details\" \"live-server\""
   },
   "devDependencies": {
     "coffee-script": "^1.11.1",
