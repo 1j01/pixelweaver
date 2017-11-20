@@ -106,8 +106,6 @@ add_colonization_ellipsoid
 	z: 0
 	200
 
-# attract_dist = 1
-
 nearest = (points, x, y, z)->
 	closest_dist = Infinity
 	closest_point = null
