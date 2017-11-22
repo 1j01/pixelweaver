@@ -95,8 +95,8 @@ Space|Play/pause
 Home|Seek to start
 Left arrow|Seek backwards (*Note*: recomputes up to that point!)
 Right arrow|Step forwards
-<!-- <kbd>,</kbd> (<)|Step backwards one frame (*Note*: recomputes up to that point!)
-<kbd>.</kbd> (>)|Step forwards one frame -->
+<kbd>,</kbd> (<)|Step backwards one frame (*Note*: recomputes up to that point!)
+<kbd>.</kbd> (>)|Step forwards one frame
 
 
 ## API

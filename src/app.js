@@ -127,9 +127,7 @@ var simulate_to = function(new_t) {
 		// var loop_execution_limit_ms = 40
 		// var start = performance.now()
 
-		// FIXME: single frame accuracy
-		// (should move the increment out of the condition)
-		while (++t <= new_t) {
+		while (t < new_t) {
 			gl.onupdate()
 			gl.ondraw()
 			maybe_make_checkpoint()
@@ -137,6 +135,7 @@ var simulate_to = function(new_t) {
 			// if (elapsed > loop_execution_limit_ms) {
 			// 	break
 			// }
+			t++;
 		}
 	}
 	slider.MaterialSlider.change(t)
@@ -526,7 +525,7 @@ var run_program_from_source = function(source) {
 	play()
 }
 
-fetch("examples/weave.coffee").then(function(response) {
+fetch("examples/art-doodle.coffee").then(function(response) {
 	return response.text().then(function(text) {
 		run_program_from_source(text)
 	})
