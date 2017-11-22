@@ -84,6 +84,21 @@ based on how much you've changed it or whatever,
 ignoring helper functions because they're not important to the Art.
 (I don't know, maybe the examples shouldn't have an `@Author`...)
 
+
+## Keyboard Shortcuts
+
+**Shortcut**|**Action**
+-----|-----
+<kbd>R</kbd>|Reseed
+<kbd>E</kbd>|Export
+Space|Play/pause
+Home|Seek to start
+Left arrow|Seek backwards (*Note*: recomputes up to that point!)
+Right arrow|Step forwards
+<!-- <kbd>,</kbd> (<)|Step backwards one frame (*Note*: recomputes up to that point!)
+<kbd>.</kbd> (>)|Step forwards one frame -->
+
+
 ## API
 
 The API isn't exactly solid yet.

@@ -126,6 +126,9 @@ var simulate_to = function(new_t) {
 		
 		// var loop_execution_limit_ms = 40
 		// var start = performance.now()
+
+		// FIXME: single frame accuracy
+		// (should move the increment out of the condition)
 		while (++t <= new_t) {
 			gl.onupdate()
 			gl.ondraw()
@@ -259,7 +262,7 @@ dialog.querySelector('.close').addEventListener('click', function() {
 	dialog.close()
 })
 
-source_button.addEventListener("click", function() {
+function show_metadata_and_program_source() {
 	pause();
 
 	var metadata = collect_metadata();
@@ -298,9 +301,9 @@ source_button.addEventListener("click", function() {
 	program_source_el.style.display = "none";
 	
 	dialog.showModal();	
-});
+}
 
-export_button.addEventListener("click", function() {
+function export_program_as_png() {
 	var a = document.createElement("a")
 	a.download = "export.png"
 	
@@ -316,14 +319,19 @@ export_button.addEventListener("click", function() {
 			a.click()
 		})
 	}, "image/png")
-})
+}
 
-reseed_button.addEventListener("click", function() {
+
+function reseed() {
 	seed = seed_gen()
 	if (program_source) {
 		init_program()
 	}
-})
+}
+
+source_button.addEventListener("click", show_metadata_and_program_source);
+export_button.addEventListener("click", export_program_as_png)
+reseed_button.addEventListener("click", reseed)
 
 var load_program = function(source, metadata) {
 	// XXX: avoiding shadowing program_source variable
@@ -458,15 +466,40 @@ slider.addEventListener("mousedown", function() {
 })
 
 addEventListener("keydown", function(e) {
+	// console.log(e.key, e.keyCode)
 	switch (e.keyCode) {
+		// r
+		case 82:
+			reseed()
+			break
+		// TODO: shift+r/ctrl+z/z: go back a seed
+		// especially with these shortcuts so close together on a qwerty keyboard! (e and r)
+		// and especially with autoreload and autosave
+		// e
+		case 69:
+			export_program_as_png()
+			break
+		// spacebar
 		case 32:
 			play_pause()
 			break
+		// left and right arrows for seeking
 		case 37:
 			seek_by(-100)
 			break
 		case 39:
 			seek_by(+100)
+			break
+		// <, and >. for single frame stepping, same as youtube
+		case 188:
+			seek_by(-1)
+			break
+		case 190:
+			seek_by(+1)
+			break
+		// home key to go back to the start
+		case 36:
+			simulate_to(0)
 			break
 	}
 })
