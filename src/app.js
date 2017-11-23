@@ -465,40 +465,36 @@ slider.addEventListener("mousedown", function() {
 })
 
 addEventListener("keydown", function(e) {
-	// console.log(e.key, e.keyCode)
-	switch (e.keyCode) {
-		// r
-		case 82:
+	switch (e.key) {
+		case "r":
 			reseed()
 			break
 		// TODO: shift+r/ctrl+z/z: go back a seed
 		// especially with these shortcuts so close together on a qwerty keyboard! (e and r)
 		// and especially with autoreload and autosave
-		// e
-		case 69:
+		case "e":
 			export_program_as_png()
 			break
-		// spacebar
-		case 32:
+		case " ":
 			play_pause()
 			break
-		// left and right arrows for seeking
-		case 37:
+		case "Home":
+			simulate_to(0)
+			break
+		case "ArrowLeft":
 			seek_by(-100)
 			break
-		case 39:
+		case "ArrowRight":
 			seek_by(+100)
 			break
 		// <, and >. for single frame stepping, same as youtube
-		case 188:
+		case ",":
+		case "<":
 			seek_by(-1)
 			break
-		case 190:
+		case ".":
+		case ">":
 			seek_by(+1)
-			break
-		// home key to go back to the start
-		case 36:
-			simulate_to(0)
 			break
 	}
 })
