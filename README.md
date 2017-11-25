@@ -91,12 +91,14 @@ ignoring helper functions because they're not important to the Art.
 -----|-----
 <kbd>R</kbd>|Reseed
 <kbd>E</kbd>|Export
-Space|Play/pause
-Home|Seek to start
+Spacebar|Play/pause
+<kbd>Home</kbd>|Seek to start
 Left arrow|Seek backwards (*Note*: recomputes up to that point!)
 Right arrow|Step forwards
-<kbd>,</kbd> (<)|Step backwards one frame (*Note*: recomputes up to that point!)
-<kbd>.</kbd> (>)|Step forwards one frame
+<kbd>,</kbd>/<kbd><</kbd>|Step backwards one frame (*Note*: recomputes up to that point!)
+<kbd>.</kbd>/<kbd>></kbd>|Step forwards one frame
+
+(The shortcuts for single-frame stepping also work on YouTube btw)
 
 
 ## API
