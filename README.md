@@ -1,7 +1,7 @@
 
 # Pixelweaver
 
-This project is not in development, but [a more powerful platform is being planned.](#a-generative-creative-toolset) (as of writing; I'm not necessarily working on it by the time you're reading; I'm probably not gonna update this document when/if I *stop* working on it)
+*This project is not in development, but a more powerful platform is in the planning stages: [A Generative Creative Toolset.](#a-generative-creative-toolset)*
 
 Pixelweaver is a **reproducible procedural drawing** tool.
 
@@ -33,7 +33,6 @@ And you can save other screenshots, which will also embed all the data needed to
 Pixelweaver is currently focused around an [immediate mode] drawing paradigm on a 3D canvas
 in contrast to the usual [retained mode] for 3D, such as with a [scene graph].
 
-
 It could be expanded to allow for [retained mode] 3D as well,
 maybe even VR.
 Other possibilities include 3D and 2D repeating patterns and tessellations
@@ -59,6 +58,7 @@ Note that this is totally **unsandboxed** for now,
 and there isn't a reasonable way to preview a program's code before running it.
 
 You can also drag a source code file onto the app to load.
+(**Unsandboxed.**)
 
 Since the viewport is an input to the program,
 I could let you zoom around with the UI,
@@ -70,16 +70,19 @@ and use that for the preview when zooming out or panning,
 and potentially a minimap for navigation as well.
 (Like, a lower-resolution but larger-area image than the main view.)
 
+
 ## Usage
 
-I'm not sure what sort of form this project should ultimately take,
-whether it should be a plugin to a code editor, a library, or both,
-but...
+In the future, this project will take a new form,
+and it'll be subsumed and superceded by a [later project](#a-generative-creative-toolset).
 
-For now, you need [Node.js] and you have to [clone the repo],
-and then open a terminal/command prompt and run `npm install`.
-Then you can run `npm start`, which will start up a server and open up a page in your browser
-which will reload when you edit your program,
+For now, these are the steps you need to take to play around with it:
+* Install a reasonably recent version of [Node.js] if you don't have it already
+* [Clone the repo]
+* Open a terminal/command prompt
+* Run `npm install`
+* Then you can run `npm start`, which will start up a server and open up a page in your browser
+which will reload when you edit the program,
 or make changes to Pixelweaver itself.
 
 You can change the default program that's loaded from [`examples`](./examples) near the bottom of [`app.js`](./src/app.js).
@@ -88,12 +91,13 @@ Ultimately you should be able to use JavaScript or [any language that compiles t
 
 Don't forget to put your name in the `@Author` line.
 You *could* leave mine and do a `+` if you *want*,
-based on how much you've changed it or whatever,
-ignoring helper functions because they're not important to the Art.
-(I don't know, maybe the examples shouldn't have an `@Author`...)
+based on how much you've changed it or whatever
+(ignoring helper functions because they're not important to the Art),
+but you don't have to.
+(Maybe the examples shouldn't *have* an `@Author`?)
 
 
-## Keyboard Shortcuts
+### Keyboard Shortcuts
 
 **Shortcut**|**Action**
 -----|-----
@@ -107,7 +111,7 @@ Right arrow|Step forwards
 <kbd>.</kbd> (>)|Step forwards one frame
 
 
-## API
+### API
 
 The API isn't exactly solid yet.
 But it's *versioned*, at least.
@@ -145,9 +149,11 @@ or `time` modulo N for a repeating event.)
 
 And don't use global variables or `localStorage` or other obvious ways you could work around (i.e. break) reproducibility.
 
+
 ## A Generative Creative Toolset
 
-I'm writing a manifesto for a project that combines ideas from this project and [Mopaint] (as well as other works, by other people, because you know, *it would be crazy not to*). (as of writing. as of writing, I'm not done the first draft.)
+I'm writing a manifesto for a project that combines ideas from this project and [Mopaint] (as well as other works, by other people, because you know, *it would be crazy not to*).
+(As of writing, I'm still working on the first draft, if you're wondering why I'm not linking it.)
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
