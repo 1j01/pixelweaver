@@ -1,22 +1,29 @@
 
 # Pixelweaver
 
+This project is not in development, but [a more powerful platform is being planned.](#a-generative-creative-toolset) (as of writing; I'm not necessarily working on it by the time you're reading; I'm probably not gonna update this document when/if I *stop* working on it)
+
 Pixelweaver is a **reproducible procedural drawing** tool.
-It gives you controls to scrub through time,
-without retricting you to drawing each frame from some small state object.
-Images saved with the Export button
-<!-- embed all the data needed to reproduce the state at which they were captured -->
-can be loaded back into the app with drag and drop
-<!-- including source code, random seed, position in time and space, etc., -->
+
+It lets you scrub through time,
+without restricting you by saying your drawing code has to be a function of time, or some small state object.
+(It shows you a preview, and when you release your mouse button it simulates from the begining up to that point.
+Having your drawing code as a pure function could be an alternative option (retained mode), to make jumping to any point in time equally unexpensive.) 
+
+**Images saved with the Export button**
+**can be loaded** back into the app with drag and drop
 and you can play back to the point the image was captured.
 And beyond. Or back.
-<!-- (once zooming/panning implemented:) -->
-<!-- *Zoom and enhance.* -->
-<!-- Or *uncrop*. -->
 Maybe try a new random seed.
 And you can save other screenshots, which will also embed all the data needed to reproduce them.
-<!-- (once supported:) -->
+<!-- (once zooming/panning implemented:) -->
+<!-- *"Zoom and enhance."* -->
+<!-- *"Uncrop."* -->
+<!-- (once code export supported:) -->
 <!-- And then export the code and/or edit it in an editor or whatever? -->
+
+<!-- They embed all the data needed to reproduce the state at which they were captured -->
+<!-- including source code, random seed, position in time and space, etc., -->
 
 <!-- (You can also save images that don't include any of that metadata by just right clicking on the canvas and saving it as an image. In chrome, at least...) -->
 
@@ -39,7 +46,7 @@ simulating up to that point when you release.
 When you take a screenshot with the Export button,
 it embeds all the metadata required to reproduce the state,
 including the entire source code for the program,
-the position in the animation, the random seed, the viewport, and any other inputs.
+the position in the animation, the random seed, the viewport (camera), and any other inputs.
 It'll also include the Creation Time (time of export),
 and the Author if specified via an `@author` tag in the source.
 There are a few other [standard metadata keywords]
@@ -58,9 +65,10 @@ I could let you zoom around with the UI,
 previewing the change by scaling/translating the output of the program
 before simulating back up to that point.
 
-Could render the program in parallel at a zoomed out scale,
+I could render the program in parallel at a zoomed out scale,
 and use that for the preview when zooming out or panning,
 and potentially a minimap for navigation as well.
+(Like, a lower-resolution but larger-area image than the main view.)
 
 ## Usage
 
@@ -79,7 +87,7 @@ Programs are currently written in [Coffeescript], because I like CoffeeScript.
 Ultimately you should be able to use JavaScript or [any language that compiles to it][compile-to-JS langs].
 
 Don't forget to put your name in the `@Author` line.
-You could leave mine and do a `+` if you want,
+You *could* leave mine and do a `+` if you *want*,
 based on how much you've changed it or whatever,
 ignoring helper functions because they're not important to the Art.
 (I don't know, maybe the examples shouldn't have an `@Author`...)
@@ -102,7 +110,7 @@ Right arrow|Step forwards
 ## API
 
 The API isn't exactly solid yet.
-(It's *versioned*, at least.)
+But it's *versioned*, at least.
 
 There are way more use cases for the functionality than I initially considered.
 Probably need to *invert control* somehow to allow for these possibilities.
@@ -135,8 +143,11 @@ that operate on animation frame intervals.
 and checking equality for scheduling a single event,
 or `time` modulo N for a repeating event.)
 
-And don't use global variables or `localStorage` or other obvious ways you could work around reproducibility.
-(That is, break it.)
+And don't use global variables or `localStorage` or other obvious ways you could work around (i.e. break) reproducibility.
+
+## A Generative Creative Toolset
+
+I'm writing a manifesto for a project that combines ideas from this project and [Mopaint] (as well as other works, by other people, because you know, *it would be crazy not to*). (as of writing. as of writing, I'm not done the first draft.)
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
@@ -148,3 +159,4 @@ And don't use global variables or `localStorage` or other obvious ways you could
 [Coffeescript]: http://coffeescript.org/
 [compile-to-JS langs]: https://github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js
 [clone the repo]: https://help.github.com/articles/cloning-a-repository/
+[Mopaint]: https://github.com/1j01/mopaint
