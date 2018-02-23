@@ -24,7 +24,7 @@ draw_circle = (gl, x, y, z, r, points=3*5)->
 		)
 	gl.end()
 
-draw_segment_triangles = (gl, x1, y1, z1, x2, y2, z2, width, colorA, colorB)->
+draw_segment_tris = (gl, x1, y1, z1, x2, y2, z2, width, colorA, colorB)->
 	dx = x2 - x1
 	dy = y2 - y1
 	angle = Math.PI / 2 - Math.atan2(dy, dx)
@@ -51,10 +51,10 @@ structure = {
 	circles: []
 }
 
-make_circular_structure = ({x, y, z, radius, numRadialPoints=32, label=""})->
-	circle = {x, y, z, radius, numRadialPoints, label}
+make_circular_structure = ({x, y, z, radius, num_radial_points=32, label=""})->
+	circle = {x, y, z, radius, num_radial_points, label}
 	circle.radialPoints = []
-	for angle in [0..Math.PI * 2] by Math.PI * 2 / numRadialPoints
+	for angle in [0..Math.PI * 2] by Math.PI * 2 / num_radial_points
 		circle.radialPoints.push {
 			x: x + Math.sin(angle) * radius
 			y: y + Math.cos(angle) * radius
@@ -64,7 +64,7 @@ make_circular_structure = ({x, y, z, radius, numRadialPoints=32, label=""})->
 	structure.circles.push(circle)
 	circle
 
-makeNumberRandomlyFromFactors = (factors, numFactors)->
+make_number_randomly_from_factors = (factors, numFactors)->
 	num = 1
 	for [0..numFactors]
 		factor = choose(factors)
@@ -72,8 +72,8 @@ makeNumberRandomlyFromFactors = (factors, numFactors)->
 	num
 
 # the idea here is to sometimes get more hexagonal structures or more octagonal ones etc.
-numRadialPointsOptions = (makeNumberRandomlyFromFactors([2, 3], rand(1, 3)) for [0..rand(1, 3)])
-# console.log numRadialPointsOptions
+num_radial_points_options = (make_number_randomly_from_factors([2, 3], rand(1, 3)) for [0..rand(1, 3)])
+# console.log num_radial_points_options
 
 # make_circular_structure x: 0, y: 0, z: 0, radius: 4, label: "root"
 for [0..rand(1, 4)]
@@ -132,7 +132,7 @@ class DoodleAgent
 			@target_point.shape = make_circular_structure({
 				@x, @y, @z
 				radius: rand(0.1, 5)
-				numRadialPoints: choose(numRadialPointsOptions)
+				num_radial_points: choose(num_radial_points_options)
 			})
 
 		# if Math.random() < 0.5 and @target_point.color?
@@ -147,12 +147,12 @@ class DoodleAgent
 		gl.begin(gl.TRIANGLES)
 		# gl.color(@border_color...)
 		# gl.color(bg_color...)
-		# draw_segment_triangles(gl, prev_x, prev_y, prev_z - 0.01, @x, @y, @z - 0.01, @width + @border_width)
-		# draw_segment_triangles(gl, prev_x, prev_y, prev_z - 0.01, @x, @y, @z + 0.01, @width + @border_width)
-		draw_segment_triangles(gl, prev_x, prev_y, prev_z - 0.03, @x, @y, @z + 0.03, @width + @border_width, @color_a, @color_b)
+		# draw_segment_tris(gl, prev_x, prev_y, prev_z - 0.01, @x, @y, @z - 0.01, @width + @border_width)
+		# draw_segment_tris(gl, prev_x, prev_y, prev_z - 0.01, @x, @y, @z + 0.01, @width + @border_width)
+		draw_segment_tris(gl, prev_x, prev_y, prev_z - 0.03, @x, @y, @z + 0.03, @width + @border_width, @color_a, @color_b)
 		# gl.color(@color...)
-		# draw_segment_triangles(gl, prev_x, prev_y, prev_z, @x, @y, @z, @width)
-		draw_segment_triangles(gl, prev_x, prev_y, prev_z, @x, @y, @z - 0.5, @width, @color_a, @color_b)
+		# draw_segment_tris(gl, prev_x, prev_y, prev_z, @x, @y, @z, @width)
+		draw_segment_tris(gl, prev_x, prev_y, prev_z, @x, @y, @z - 0.5, @width, @color_a, @color_b)
 		gl.end()
 
 		gl.color(@color_a...)
