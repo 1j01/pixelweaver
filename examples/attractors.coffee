@@ -67,18 +67,15 @@ add_ellipsoid_of_random_particles = (particles, ellipsoid, n)->
 				reached: no
 			})
 
-add_ellipsoid_of_random_particles(
-	particles,
-	{
-		xr: 4
-		yr: 4
-		zr: 4
-		x: 0
-		y: 0
-		z: 0
-	}
-	3000
-)
+star_field_ellipsoid =
+	xr: 4
+	yr: 4
+	zr: 4
+	x: 0
+	y: 0
+	z: 0
+
+add_ellipsoid_of_random_particles(particles, star_field_ellipsoid, 3000)
 
 
 class DoodleAgent
@@ -102,12 +99,12 @@ class DoodleAgent
 
 		attraction_of_points = 0.05 # velocity scalar
 		turn_when_hitting_points = 500 # scalar affects rotation towards points
-		turn_when_near_point = 500 # scalar affects rotation towards points
+		turn_when_near_point = 0.005 # scalar affects rotation towards points
 
 		point_friction = 0.01
 
 		wandering_randomness = 0.0005
-		wandering_speed = 1
+		wandering_speed = 0.1
 
 		move_x = @x - @prev_x
 		move_y = @y - @prev_y
@@ -123,21 +120,22 @@ class DoodleAgent
 		
 
 		for point in particles
-			dist = dist3d(point.x, point.y, point.z, @x, @y, @z)
+			delta_x = point.x - @x
+			delta_y = point.y - @y
+			delta_z = point.z - @z
+			dist = Math.hypot(delta_x, delta_y, delta_z)
+			
 			if dist < 0.2
 				point.reached = true
 
-				delta_x = point.x - @x
-				delta_y = point.y - @y
-				delta_z = point.z - @z
 				point.vx -= delta_x / dist * attraction_of_points
 				point.vy -= delta_y / dist * attraction_of_points
 				point.vz -= delta_z / dist * attraction_of_points
 			
-				turn_amount = (if point.reached then turn_when_hitting_points else turn_when_near_point)
-				move_x += delta_x / dist * turn_amount
-				move_y += delta_y / dist * turn_amount
-				move_z += delta_z / dist * turn_amount
+			turn_amount = (if point.reached then turn_when_hitting_points else turn_when_near_point * dist)
+			move_x += delta_x / dist * turn_amount
+			move_y += delta_y / dist * turn_amount
+			move_z += delta_z / dist * turn_amount
 				
 			point.x += point.vx
 			point.y += point.vy
@@ -175,7 +173,14 @@ class DoodleAgent
 
 
 
-agents = (new DoodleAgent(z: rand(0.1)) for [1..rand(10)])
+agents =
+	for [1..rand(100)]
+		angle = rand(Math.PI * 2)
+		new DoodleAgent(
+			x: Math.sin(angle) * star_field_ellipsoid.xr
+			y: Math.cos(angle) * star_field_ellipsoid.yr
+			z: rand(0.1)
+		)
 
 # bg_color = [rand(0.6, 1), rand(0.6, 1), rand(0.8, 1), 1]
 bg_color = [0, 0, 0, 1]
