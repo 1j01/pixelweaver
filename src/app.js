@@ -521,7 +521,7 @@ var run_program_from_source = function(source) {
 	play()
 }
 
-fetch("examples/art-doodle.coffee").then(function(response) {
+fetch("examples/attractors.coffee").then(function(response) {
 	return response.text().then(function(text) {
 		run_program_from_source(text)
 	})

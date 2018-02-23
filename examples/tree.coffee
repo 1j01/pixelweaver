@@ -66,16 +66,16 @@ segment = (gl, base_x, base_y, base_z, width, length, angle)->
 
 targets = []
 
-add_colonization_ellipsoid = (space_to_colonize, n)->
+add_colonization_ellipsoid = (ellipsoid, n)->
 	for [0..n]
 		x = rand(-1, 1)
 		y = rand(-1, 1)
 		z = rand(-1, 1)
 		if dist3d(x, y, z, 0, 0, 0) < 1
 			targets.push({
-				x: space_to_colonize.x + x * space_to_colonize.xr
-				y: space_to_colonize.y + y * space_to_colonize.yr
-				z: space_to_colonize.z + z * space_to_colonize.zr
+				x: ellipsoid.x + x * ellipsoid.xr
+				y: ellipsoid.y + y * ellipsoid.yr
+				z: ellipsoid.z + z * ellipsoid.zr
 				reached: no
 			})
 
