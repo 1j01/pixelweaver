@@ -253,10 +253,8 @@ var collect_metadata = function(){
 play_pause_button.addEventListener("click", play_pause)
 
 var dialog = document.getElementById('show-source-dialog')
-if (!dialog.showModal) {
-	// TODO: include polyfill
-	dialogPolyfill.registerDialog(dialog)
-}
+dialogPolyfill.registerDialog(dialog)
+
 dialog.querySelector('.close').addEventListener('click', function() {
 	dialog.close()
 })
