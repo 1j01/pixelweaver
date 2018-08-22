@@ -1,14 +1,14 @@
 
 # Pixelweaver
 
-*This project is not in development, but a more powerful platform is in the planning stages, a generative creative toolset. See [Mopaint][]*
+*This project is not in development, but I have ideas about how the problem(s) could be solved more generally. See [Mopaint][]*
 
 Pixelweaver is a **reproducible procedural drawing** tool.
 
 ![](examples/pixelweaver.png)
 
 It lets you scrub through time,
-without restricting you by saying your drawing code has to be a function of time, or some small state object.
+without restricting you by saying your drawing code has to be a function of time (or of some small state object).
 (It shows you a preview, and when you release your mouse button it simulates from the beginning up to that point.
 Having your drawing code as a pure function could be an alternative option (retained mode), to make jumping to any point in time equally unexpensive.) 
 
