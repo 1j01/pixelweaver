@@ -1,13 +1,13 @@
 
 # Pixelweaver
 
-*This project is not in development, but a more powerful platform is in the planning stages: [A Generative Creative Toolset.](#a-generative-creative-toolset)*
+*This project is not in development, but a more powerful platform is in the planning stages, a generative creative toolset. See [Mopaint][]*
 
 Pixelweaver is a **reproducible procedural drawing** tool.
 
 It lets you scrub through time,
 without restricting you by saying your drawing code has to be a function of time, or some small state object.
-(It shows you a preview, and when you release your mouse button it simulates from the begining up to that point.
+(It shows you a preview, and when you release your mouse button it simulates from the beginning up to that point.
 Having your drawing code as a pure function could be an alternative option (retained mode), to make jumping to any point in time equally unexpensive.) 
 
 **Images saved with the Export button**
@@ -65,16 +65,12 @@ I could let you zoom around with the UI,
 previewing the change by scaling/translating the output of the program
 before simulating back up to that point.
 
-I could render the program in parallel at a zoomed out scale,
+I could render the program in parallel at a zoomed out scale (at a lower resolution),
 and use that for the preview when zooming out or panning,
 and potentially a minimap for navigation as well.
-(Like, a lower-resolution but larger-area image than the main view.)
 
 
 ## Usage
-
-In the future, this project will take a new form,
-and it'll be subsumed and superceded by a [later project](#a-generative-creative-toolset).
 
 For now, these are the steps you need to take to play around with it:
 * Install a reasonably recent version of [Node.js] if you don't have it already
@@ -89,28 +85,27 @@ You can change the default program that's loaded from [`examples`](./examples) n
 Programs are currently written in [Coffeescript], because I like CoffeeScript.
 Ultimately you should be able to use JavaScript or [any language that compiles to it][compile-to-JS langs].
 
-Don't forget to put your name in the `@Author` line.
-You *could* leave mine and do a `+` if you *want*,
-based on how much you've changed it or whatever
-(ignoring helper functions because they're not important to the Art),
-but you don't have to.
-(Maybe the examples shouldn't *have* an `@Author`?)
+Don't forget to put your name in the `@Author` line.  
+(You *could* leave mine and do a `+` if you *want*,
+based on how much you've changed it or whatever, but you don't have to.)  
+(You can ignore helper functions because they're not important to the art.)  
+(Maybe the examples shouldn't *have* an `@Author`? But then they wouldn't be an example of `@Author`...)
 
 
 ### Keyboard Shortcuts
 
-**Shortcut**|**Action**
------|-----
-<kbd>R</kbd>|Reseed
-<kbd>E</kbd>|Export
-Spacebar|Play/pause
-<kbd>Home</kbd>|Seek to start
-Left arrow|Seek backwards (*Note*: recomputes up to that point!)
-Right arrow|Step forwards
-<kbd>,</kbd>/<kbd><</kbd>|Step backwards one frame (*Note*: recomputes up to that point!)
-<kbd>.</kbd>/<kbd>></kbd>|Step forwards one frame
+**Shortcut**              | **Action**
+--------------------------|-----------
+<kbd>R</kbd>              | Reseed
+<kbd>E</kbd>              | Export
+Spacebar                  | Play/pause
+<kbd>Home</kbd>           | Seek to start
+Left arrow                | Seek backwards (*Note*: recomputes up to that point!)
+Right arrow               | Step forwards
+<kbd>,</kbd>/<kbd><</kbd> | Step backwards one frame (*Note*: recomputes up to that point!)
+<kbd>.</kbd>/<kbd>></kbd> | Step forwards one frame
 
-(The shortcuts for single-frame stepping also work on YouTube btw)
+(The shortcuts for single-frame stepping also work on YouTube by the way.)
 
 
 ### API
@@ -124,7 +119,7 @@ Probably need to *invert control* somehow to allow for these possibilities.
 for including a scrubber and saving/loading state from screenshots,
 but the rest is up to you?
 I guess you'd have to have an API version indicator specific to your application.
-And, idk, it seems like the end result should be an app,
+And, idk, it "seems" natural that the end result would be an app,
 but you'd naturally want so many things related to coding,
 only tangentially related to the core idea of reproducibility,
 that it doesn't make sense.
@@ -135,10 +130,14 @@ It should be like a plugin.
 -->
 
 At the top level, you can provide `@draw` and `@update`.
+
 `@draw` is passed the `gl` object from [lightgl.js].
 
+(*Note:* lightgl.js isn't really made for this, and the immediate mode drawing functions are described as "only meant for quick debugging tasks" - but it's simpler than raw WebGL)
+
 There are no requirements that a program's state be JSON-serializable.
-You can even update state in `draw`, but that should really be done in `update`.
+You can even update state in `draw`, but that should "really" be done in `update`.
+(If it feels natural to update state and draw at the same time, you can.)
 
 
 You shouldn't use `setTimeout` or `setInterval`,
@@ -150,12 +149,6 @@ and checking equality for scheduling a single event,
 or `time` modulo N for a repeating event.)
 
 And don't use global variables or `localStorage` or other obvious ways you could work around (i.e. break) reproducibility.
-
-
-## A Generative Creative Toolset
-
-I'm writing a manifesto for a project that combines ideas from this project and [Mopaint] (as well as other works, by other people, because you know, *it would be crazy not to*).
-(As of writing, I'm still working on the first draft, if you're wondering why I'm not linking it.)
 
 
 [immediate mode]: https://en.wikipedia.org/wiki/Immediate_mode_(computer_graphics)
