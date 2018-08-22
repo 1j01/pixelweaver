@@ -50,3 +50,7 @@ body {
 	flex: 1;
 	overflow: auto;
 }
+
+.icon path:not([fill=none]) {
+	fill: currentColor;
+}

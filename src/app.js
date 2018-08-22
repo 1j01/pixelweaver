@@ -19,7 +19,8 @@ var source_button = document.getElementById("show-source")
 var export_button = document.getElementById("export")
 var reseed_button = document.getElementById("reseed")
 var play_pause_button = document.getElementById("play-pause")
-var play_pause_icon = document.querySelector("#play-pause .material-icons")
+var play_icon = document.querySelector("#play-icon")
+var pause_icon = document.querySelector("#pause-icon")
 
 componentHandler.upgradeElement(slider)
 
@@ -146,11 +147,17 @@ var show_checkpoint = false
 
 var play = function() {
 	playing = true
-	play_pause_icon.textContent = "pause"
+	play_pause_button.setAttribute("aria-label", "Pause");
+	play_icon.setAttribute("hidden", "hidden");
+	pause_icon.removeAttribute("hidden");
+	// Note: SVG not HTML elements, so no .hidden properties
 }
 var pause = function() {
 	playing = false
-	play_pause_icon.textContent = "play_arrow"
+	play_pause_button.setAttribute("aria-label", "Play");
+	pause_icon.setAttribute("hidden", "hidden");
+	play_icon.removeAttribute("hidden");
+	// Note: SVG not HTML elements, so no .hidden properties
 }
 var play_pause = function() {
 	if (playing) {

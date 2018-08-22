@@ -5,7 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Pixelweaver</title>
 		<link rel="stylesheet" href="app.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> <!-- does UA detection; hash would differ -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.2.1/material.indigo-pink.min.css" integrity="sha384-Jtb0Zsx6xPbe9y6wJswHkudPknjY2tWTmmiY8OkwnU/xAMxK0T3iXN++m+Zwq5ct" crossorigin="anonymous">
 		<link rel="icon" type="image/png" href="favicon.png">
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
@@ -22,12 +21,44 @@
 		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 			<header class="mdl-layout__header">
 				<div class="mdl-layout__header-row">
-					<button id="play-pause" class="mdl-button mdl-js-button mdl-button--icon mdl-button--primary"><i class="material-icons">play_arrow</i></button>
+					<button id="play-pause" class="mdl-button mdl-js-button mdl-button--icon mdl-button--primary" aria-label="Play">
+						<!-- baseline-play_arrow-24px.svg -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="icon" id="play-icon">
+							<path d="M8 5v14l11-7z"/>
+							<path d="M0 0h24v24H0z" fill="none"/>
+						</svg>
+						<!-- baseline-pause-24px.svg -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="icon" id="pause-icon" hidden>
+							<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+							<path d="M0 0h24v24H0z" fill="none"/>
+						</svg>
+					</button>
 					<input id="animation-position" class="mdl-slider mdl-js-slider" type="range" min="0" max="1000" value="0" tabindex="0">
 					<!-- TODO: show animation time as a number -->
-					<button id="reseed" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons" aria-hidden="true">casino</i> Reseed</button>
-					<button id="export" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons" aria-hidden="true">photo</i> Export</button>
-					<button id="show-source" class="mdl-button mdl-js-button mdl-button--primary"><i class="material-icons" aria-hidden="true">description</i> View Source</button>
+					<button id="reseed" class="mdl-button mdl-js-button mdl-button--primary">
+						<!-- baseline-casino-24px.svg -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="icon">
+							<path fill="none" d="M0 0h24v24H0zm21.02 19c0 1.1-.9 2-2 2h-14c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v14z"/>
+							<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM7.5 18c-.83 0-1.5-.67-1.5-1.5S6.67 15 7.5 15s1.5.67 1.5 1.5S8.33 18 7.5 18zm0-9C6.67 9 6 8.33 6 7.5S6.67 6 7.5 6 9 6.67 9 7.5 8.33 9 7.5 9zm4.5 4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4.5 4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm0-9c-.83 0-1.5-.67-1.5-1.5S15.67 6 16.5 6s1.5.67 1.5 1.5S17.33 9 16.5 9z"/>
+						</svg>
+						Reseed
+					</button>
+					<button id="export" class="mdl-button mdl-js-button mdl-button--primary">
+						<!-- baseline-photo-24px.svg -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="icon">
+							<path d="M0 0h24v24H0z" fill="none"/>
+							<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+						</svg>
+						Export
+					</button>
+					<button id="show-source" class="mdl-button mdl-js-button mdl-button--primary">
+						<!-- baseline-description-24px.svg -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="icon">
+							<path d="M0 0h24v24H0z" fill="none"/>
+							<path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+						</svg>
+						View Source
+					</button>
 					<!-- possible icons: info-outline, code, description -->
 				</div>
 			</header>
