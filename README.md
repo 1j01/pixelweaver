@@ -5,6 +5,8 @@
 
 Pixelweaver is a **reproducible procedural drawing** tool.
 
+![](examples/pixelweaver.png)
+
 It lets you scrub through time,
 without restricting you by saying your drawing code has to be a function of time, or some small state object.
 (It shows you a preview, and when you release your mouse button it simulates from the beginning up to that point.
