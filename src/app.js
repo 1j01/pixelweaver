@@ -521,7 +521,6 @@ var init_program = function() {
 
 var run_program_from_source = function(source) {
 	program_source = source
-	window.code_for_copying = source
 	init_program()
 	play()
 }
