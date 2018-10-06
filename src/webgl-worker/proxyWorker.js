@@ -399,6 +399,10 @@ onmessage = function onmessage(message) {
       removeRunDependency('worker-init');
       break;
     }
+    case 'init-program': {
+      init_program(message.data);
+      break;
+    }
     default: throw new Error('Unhandled message from client to worker: ' + JSON.stringify(message.data));
   }
 };

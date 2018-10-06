@@ -1,31 +1,23 @@
 
 // TODO: sandbox (see sandbox.js)
 
-// TODO: seeded random
-	// const seed_random = require("seedrandom")
-	// or
-	// importScripts("../lib/seedrandom.js");
-
 importScripts("webgl-worker/emshim.js");
 importScripts("webgl-worker/webGLWorker.js");
 importScripts("webgl-worker/proxyWorker.js");
 importScripts("../lib/lightgl-patched.js");
+importScripts("../lib/coffee-script.js");
+importScripts("../lib/seedrandom.min.js");
 
-// TODO: better & dynamic
-importScripts("../examples/doodle.js");
-var program_context = self
-
-
-setMain(function() {
-
+var gl
+var program_source
+var program_context
+var seed
 var view_width = 10
 var view_height = 10
 var view_scale = 100
 var camera_x = 0
 var camera_y = 0
 var camera_z = -500
-
-var gl
 
 var init_gl = function() {
 	gl = GL.create({preserveDrawingBuffer: true})
@@ -59,29 +51,28 @@ var init_gl = function() {
 	}
 }
 
-init_gl()
+var init_program = function(data) {
+	// TODO: get viewport information
+	seed = data.seed;
+	program_source = data.program_source;
+	program_context = {}
 
-var time = 0;
-var animate = function () {
-	gl.onupdate();
-	gl.ondraw();
-	requestAnimationFrame(animate);
-}
-animate();
-
-var init_program = function() {
 	init_gl()
 	
-	clear_checkpoints()
-	
-	t = 0
-	slider.MaterialSlider.change(t)
-	
-	seed_random(seed, {global: true})
+	Math.seedrandom(seed, {global: true})
 	
 	program_context = {}
-	CoffeeScript.eval.call(program_context, program_source)
 	// TODO: sandbox
+	CoffeeScript.eval.call(program_context, program_source)
+
+	var time = 0;
+	var animate = function () {
+		gl.onupdate();
+		gl.ondraw();
+		requestAnimationFrame(animate);
+	}
+	animate();
+
 }
 
 var simulate_to = function(new_t) {
@@ -91,25 +82,13 @@ var simulate_to = function(new_t) {
 			init_program()
 		}
 		
-		// TODO: limit this loop based on execution time
-		// will need to change things in the application logic
-		// might want to pass loop_execution_limit_ms as a parameter
-		
-		// var loop_execution_limit_ms = 40
-		// var start = performance.now()
-
 		while (t < new_t) {
 			gl.onupdate()
 			gl.ondraw()
-			maybe_make_checkpoint()
-			// var elapsed = performance.now() - start
-			// if (elapsed > loop_execution_limit_ms) {
-			// 	break
-			// }
+			// TODO: send time back to client
 			t++;
 		}
 	}
-	// slider.MaterialSlider.change(t)
 }
 
-});
+setMain(function() { });

@@ -483,18 +483,19 @@ addEventListener("keydown", function(e) {
 var init_program = function() {
 	// init_gl()
 	
-	// clear_checkpoints()
+	// TODO: guarantee checkpoints stay cleared until worker resets
+	// (possibly kill the worker and use a new one, possibly from a pool)
+	clear_checkpoints()
 	
-	// t = 0
-	// slider.MaterialSlider.change(t)
+	t = 0
+	slider.MaterialSlider.change(t)
 	
-	// seed_random(seed, {global: true})
-	
-	// program_context = {}
-	// CoffeeScript.eval.call(program_context, program_source)
-	// // TODO: sandbox
-
-	
+	// TODO: send viewport information
+	worker.postMessage({
+		target: "init-program",
+		program_source,
+		seed,
+	});
 }
 
 var run_program_from_source = function(source) {
