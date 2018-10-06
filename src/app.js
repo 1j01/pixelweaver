@@ -29,48 +29,13 @@ var ctx = canvas.getContext("2d")
 canvas.style.background = "#000"
 container.appendChild(canvas)
 
-var view_width = 10
-var view_height = 10
-var view_scale = 100
-var camera_x = 0
-var camera_y = 0
-var camera_z = -500
-
-var gl
-
-var init_gl = function() {
-	gl = GL.create({preserveDrawingBuffer: true})
-	
-	gl.enable(gl.DEPTH_TEST)
-
-	gl.canvas.width = view_width * view_scale
-	gl.canvas.height = view_height * view_scale
-	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-	
-	gl.matrixMode(gl.PROJECTION)
-	gl.loadIdentity()
-	gl.ortho(-view_width/2, view_width/2, -view_height/2, view_height/2, 0.1, 1000)
-	// gl.perspective(view_fov, view_width/view_height, 0.1, 1000)
-	gl.matrixMode(gl.MODELVIEW)
-	
-	// NOTE: these don't need to be attached to gl; that's just how it's done in the examples
-	gl.onupdate = function() {
-		if (program_context && program_context.update) {
-			program_context.update()
-		}
-	}
-	gl.ondraw = function() {
-		if (program_context && program_context.draw) {
-			gl.loadIdentity()
-			gl.translate(camera_x, camera_y, camera_z)
-			// gl should probably just be global for the program
-			// or at least there should be an init method you can define that also gets gl
-			program_context.draw(gl)
-		}
-	}
-}
-
-init_gl()
+// TODO
+// var view_width = 10
+// var view_height = 10
+// var view_scale = 100
+// var camera_x = 0
+// var camera_y = 0
+// var camera_z = -500
 
 var t = 0
 var CHECKPOINT_INTERVAL = 10
@@ -101,9 +66,9 @@ var maybe_make_checkpoint = function() {
 	if (!checkpoint) {
 		var checkpoint_canvas = document.createElement("canvas")
 		var checkpoint_ctx = checkpoint_canvas.getContext("2d")
-		checkpoint_canvas.width = gl.canvas.width
-		checkpoint_canvas.height = gl.canvas.height
-		checkpoint_ctx.drawImage(gl.canvas, 0, 0)
+		checkpoint_canvas.width = canvas.width
+		checkpoint_canvas.height = canvas.height
+		checkpoint_ctx.drawImage(canvas, 0, 0)
 		var checkpoint = {t: t, canvas: checkpoint_canvas}
 		checkpoints.push(checkpoint)
 	}
@@ -115,31 +80,31 @@ var clear_checkpoints = function() {
 }
 
 var simulate_to = function(new_t) {
-	if (program_source) {
-		if (new_t < t) {
-			t = 0
-			init_program()
-		}
+	// if (program_source) {
+	// 	if (new_t < t) {
+	// 		t = 0
+	// 		init_program()
+	// 	}
 		
-		// TODO: limit this loop based on execution time
-		// will need to change things in the application logic
-		// might want to pass loop_execution_limit_ms as a parameter
+	// 	// TODO: limit this loop based on execution time
+	// 	// will need to change things in the application logic
+	// 	// might want to pass loop_execution_limit_ms as a parameter
 		
-		// var loop_execution_limit_ms = 40
-		// var start = performance.now()
+	// 	// var loop_execution_limit_ms = 40
+	// 	// var start = performance.now()
 
-		while (t < new_t) {
-			gl.onupdate()
-			gl.ondraw()
-			maybe_make_checkpoint()
-			// var elapsed = performance.now() - start
-			// if (elapsed > loop_execution_limit_ms) {
-			// 	break
-			// }
-			t++;
-		}
-	}
-	slider.MaterialSlider.change(t)
+	// 	while (t < new_t) {
+	// 		gl.onupdate()
+	// 		gl.ondraw()
+	// 		maybe_make_checkpoint()
+	// 		// var elapsed = performance.now() - start
+	// 		// if (elapsed > loop_execution_limit_ms) {
+	// 		// 	break
+	// 		// }
+	// 		t++;
+	// 	}
+	// }
+	// slider.MaterialSlider.change(t)
 }
 
 var playing = false
@@ -178,8 +143,8 @@ var animate = function() {
 			t += 1
 			slider.MaterialSlider.change(t)
 			
-			gl.onupdate()
-			gl.ondraw()
+			// gl.onupdate()
+			// gl.ondraw()
 			
 			maybe_make_checkpoint()
 		}
@@ -193,13 +158,13 @@ var animate = function() {
 				if (new_t > checkpoint.t + CHECKPOINT_INTERVAL + 1) {
 				// if (t >= checkpoint.t + 1 && new_t >= checkpoint.t + 1) {
 					simulate_to(new_t)
-					show_image = gl.canvas
+					show_image = canvas
 				}else{
 					show_image = checkpoint.canvas
 				}
 			}
 		}else{
-			show_image = gl.canvas
+			show_image = canvas
 		}
 		if (show_image) {
 			canvas.width = show_image.width
@@ -216,9 +181,9 @@ animate()
 require("visibility-change-ponyfill")(function() {
 	if (!document.hidden) {
 		// fix for canvas being cleared when window is blurred in Chrome
-		gl.begin(gl.TRIANGLES)
-		gl.vertex(0, 0, 0) // triangle needs at least one vertex apparently
-		gl.end()
+		// gl.begin(gl.TRIANGLES)
+		// gl.vertex(0, 0, 0) // triangle needs at least one vertex apparently
+		// gl.end()
 		// NOTE: still sometimes shows a flash of the background color
 	}
 })
@@ -504,19 +469,30 @@ addEventListener("keydown", function(e) {
 	}
 })
 
+// var worker_pool = [];
+
+// Module = {
+// 	canvas: document.getElementById("canvas")
+// }
+
+// require("./webgl-worker/webGLClient.js");
+// require("./webgl-worker/proxyClient.js");
+
 var init_program = function() {
-	init_gl()
+	// init_gl()
 	
-	clear_checkpoints()
+	// clear_checkpoints()
 	
-	t = 0
-	slider.MaterialSlider.change(t)
+	// t = 0
+	// slider.MaterialSlider.change(t)
 	
-	seed_random(seed, {global: true})
+	// seed_random(seed, {global: true})
 	
-	program_context = {}
-	CoffeeScript.eval.call(program_context, program_source)
-	// TODO: sandbox
+	// program_context = {}
+	// CoffeeScript.eval.call(program_context, program_source)
+	// // TODO: sandbox
+
+	
 }
 
 var run_program_from_source = function(source) {

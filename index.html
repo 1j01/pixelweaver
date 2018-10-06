@@ -14,7 +14,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/mode-coffee.js" integrity="sha384-ZHWdi7DZPSXUKpFmKuXDPPCvUH2ZM/zk+u9S1kwt4xVDMPoQ5jqY5dXE+jSUyprv" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.10/dialog-polyfill.min.js" integrity="sha384-SHOL1KQol/eNSOjtwXEVV5F/sCRuc7gcm+cv63VX0+le6P85cHuHyRhYVwMpWS5K" crossorigin="anonymous"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dialog-polyfill/0.4.10/dialog-polyfill.min.css" integrity="sha384-fOlU5INJLgdVhEuaW/PSJ4phKNLlMblUOoevwOENZNZZuxWIpzpD0DEbCy3sHVty" crossorigin="anonymous">
-		<script src="lib/lightgl.js"></script>
+		<!-- <script src="lib/lightgl.js"></script> -->
 		<script src="lib/coffee-script.js"></script>
 	</head>
 	<body>
@@ -62,7 +62,10 @@
 					<!-- possible icons: info-outline, code, description -->
 				</div>
 			</header>
-			<main id="animation-container"></main>
+			<main id="animation-container">
+				<!-- TODO: hidden -->
+				<canvas id="webgl-canvas"/>
+			</main>
 		</div>
 		<dialog class="mdl-dialog" id="show-source-dialog">
 			<div class="mdl-dialog-flex-wrapper">
@@ -80,6 +83,13 @@
 				</div>
 			</div>
 		</dialog>
+		<script>
+			Module = {
+				canvas: document.getElementById("webgl-canvas")
+			};
+		</script>
+		<script src="src/webgl-worker/webGLClient.js"></script>
+		<script src="src/webgl-worker/proxyClient.js"></script>
 		<script src="build/bundle.js"></script>
 	</body>
 </html>
