@@ -361,7 +361,9 @@ onmessage = function onmessage(message) {
         Module.canvas.fireEvent(message.data.event);
       } else if (message.data.boundingClientRect) {
         Module.canvas.boundingClientRect = message.data.boundingClientRect;
-      } else throw 'ey?';
+      } else {
+        throw new Error('Unhandled canvas-related message from client to worker: ' + JSON.stringify(message.data));
+      }
       break;
     }
     case 'gl': {
@@ -397,7 +399,7 @@ onmessage = function onmessage(message) {
       removeRunDependency('worker-init');
       break;
     }
-    default: throw 'wha? ' + message.data.target;
+    default: throw new Error('Unhandled message from client to worker: ' + JSON.stringify(message.data));
   }
 };
 

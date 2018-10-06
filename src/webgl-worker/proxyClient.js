@@ -82,7 +82,7 @@ worker.onmessage = function worker_onmessage(event) {
           }
           break;
         }
-        default: throw 'eh?';
+        default: throw new Error('Unhandled canvas-related message from worker to client: ' + JSON.stringify(message.data));
       }
       break;
     }
@@ -115,7 +115,7 @@ worker.onmessage = function worker_onmessage(event) {
       // img.src = data.src;
       break;
     }
-    default: throw 'what?';
+    default: throw new Error('Unhandled message from worker: ' + JSON.stringify(message.data));
   }
 };
 
