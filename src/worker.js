@@ -52,10 +52,14 @@ var init_gl = function() {
 }
 
 var init_program = function(data) {
-	// TODO: get viewport information
+	view_width = data.view_width;
+	view_height = data.view_height;
+	view_scale = data.view_scale;
+	camera_x = data.camera_x;
+	camera_y = data.camera_y;
+	camera_z = data.camera_z;
 	seed = data.seed;
 	program_source = data.program_source;
-	program_context = {}
 
 	init_gl()
 	

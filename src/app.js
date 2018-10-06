@@ -31,13 +31,12 @@ var ctx = canvas.getContext("2d")
 canvas.style.background = "#000"
 container.appendChild(canvas)
 
-// TODO
-// var view_width = 10
-// var view_height = 10
-// var view_scale = 100
-// var camera_x = 0
-// var camera_y = 0
-// var camera_z = -500
+var view_width = 10
+var view_height = 10
+var view_scale = 100
+var camera_x = 0
+var camera_y = 0
+var camera_z = -500
 
 var t = 0
 var CHECKPOINT_INTERVAL = 10
@@ -490,11 +489,16 @@ var init_program = function() {
 	t = 0
 	slider.MaterialSlider.change(t)
 	
-	// TODO: send viewport information
 	worker.postMessage({
 		target: "init-program",
 		program_source,
 		seed,
+		view_width,
+		view_height,
+		view_scale,
+		camera_x,
+		camera_y,
+		camera_z,
 	});
 }
 
