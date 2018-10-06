@@ -1,42 +1,6 @@
 
 // proxy to/from worker
 
-// utils
-
-function FPSTracker(text) {
-  var last = 0;
-  var mean = 0;
-  var counter = 0;
-  this.tick = function() {
-    var now = Date.now();
-    if (last > 0) {
-      var diff = now - last;
-      mean = 0.99*mean + 0.01*diff;
-      if (counter++ === 60) {
-        counter = 0;
-        dump(text + ' fps: ' + (1000/mean).toFixed(2) + '\n');
-      }
-    }
-    last = now;
-  };
-}
-
-/*
-function GenericTracker(text) {
-  var mean = 0;
-  var counter = 0;
-  this.tick = function(value) {
-    mean = 0.99*mean + 0.01*value;
-    if (counter++ === 60) {
-      counter = 0;
-      dump(text + ': ' + (mean).toFixed(2) + '\n');
-    }
-  };
-}
-*/
-
-// render
-
 var renderFrameData = null;
 
 function renderFrame() {
@@ -51,25 +15,6 @@ function renderFrame() {
   Module.ctx.putImageData(Module.canvasData, 0, 0);
   renderFrameData = null;
 }
-
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                               window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
-                               renderFrame;
-
-/*
-(function() {
-  var trueRAF = window.requestAnimationFrame;
-  var tracker = new FPSTracker('client');
-  window.requestAnimationFrame = function(func) {
-    trueRAF(function() {
-      tracker.tick();
-      func();
-    });
-  }
-})();
-*/
-
-// end render
 
 // Frame throttling
 
@@ -88,7 +33,7 @@ setTimeout(function() {
 var workerResponded = false;
 
 worker.onmessage = function worker_onmessage(event) {
-  //dump('\nclient got ' + JSON.stringify(event.data).substr(0, 150) + '\n');
+  // dump('\nclient got ' + JSON.stringify(event.data).substr(0, 150) + '\n');
   if (!workerResponded) {
     workerResponded = true;
     if (Module.setStatus) Module.setStatus('');
@@ -105,7 +50,8 @@ worker.onmessage = function worker_onmessage(event) {
       break;
     }
     case 'window': {
-      window[data.method]();
+      Module.printErr("(Disabled: not allowing worker to execute window."+data.method+" via proxy)");
+      // window[data.method]();
       break;
     }
     case 'canvas': {
@@ -132,7 +78,7 @@ worker.onmessage = function worker_onmessage(event) {
           } else {
             // previous image was rendered so update image and request another frame
             renderFrameData = data.image.data;
-            window.requestAnimationFrame(renderFrame);
+            requestAnimationFrame(renderFrame);
           }
           break;
         }
@@ -150,22 +96,23 @@ worker.onmessage = function worker_onmessage(event) {
       break;
     }
     case 'Image': {
-      assert(data.method === 'src');
-      var img = new Image();
-      img.onload = function() {
-        assert(img.complete);
-        var canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        var imageData = ctx.getImageData(0, 0, img.width, img.height);
-        worker.postMessage({ target: 'Image', method: 'onload', id: data.id, width: img.width, height: img.height, data: imageData.data, preMain: true });
-      };
-      img.onerror = function() {
-        worker.postMessage({ target: 'Image', method: 'onerror', id: data.id, preMain: true });
-      };
-      img.src = data.src;
+      Module.printErr("(Image support disabled)");
+      // assert(data.method === 'src');
+      // var img = new Image();
+      // img.onload = function() {
+      //   assert(img.complete);
+      //   var canvas = document.createElement('canvas');
+      //   canvas.width = img.width;
+      //   canvas.height = img.height;
+      //   var ctx = canvas.getContext('2d');
+      //   ctx.drawImage(img, 0, 0);
+      //   var imageData = ctx.getImageData(0, 0, img.width, img.height);
+      //   worker.postMessage({ target: 'Image', method: 'onload', id: data.id, width: img.width, height: img.height, data: imageData.data, preMain: true });
+      // };
+      // img.onerror = function() {
+      //   worker.postMessage({ target: 'Image', method: 'onerror', id: data.id, preMain: true });
+      // };
+      // img.src = data.src;
       break;
     }
     default: throw 'what?';
@@ -181,24 +128,4 @@ function cloneObject(event) {
   }
   return ret;
 };
-
-['keydown', 'keyup', 'keypress', 'blur', 'visibilitychange'].forEach(function(event) {
-  document.addEventListener(event, function(event) {
-    worker.postMessage({ target: 'document', event: cloneObject(event) });
-    event.preventDefault();
-  });
-});
-
-['unload'].forEach(function(event) {
-  window.addEventListener(event, function(event) {
-    worker.postMessage({ target: 'window', event: cloneObject(event) });
-  });
-});
-
-['mousedown', 'mouseup', 'mousemove', 'DOMMouseScroll', 'mousewheel', 'mouseout'].forEach(function(event) {
-  Module.canvas.addEventListener(event, function(event) {
-    worker.postMessage({ target: 'canvas', event: cloneObject(event) });
-    event.preventDefault();
-  }, true);
-});
 
