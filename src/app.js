@@ -19,8 +19,8 @@ var source_button = document.getElementById("show-source")
 var export_button = document.getElementById("export")
 var reseed_button = document.getElementById("reseed")
 var play_pause_button = document.getElementById("play-pause")
-var play_icon = document.querySelector("#play-icon")
-var pause_icon = document.querySelector("#pause-icon")
+var play_icon = document.getElementById("play-icon")
+var pause_icon = document.getElementById("pause-icon")
 
 componentHandler.upgradeElement(slider)
 
