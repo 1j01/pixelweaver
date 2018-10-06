@@ -24,6 +24,8 @@ var pause_icon = document.getElementById("pause-icon")
 
 componentHandler.upgradeElement(slider)
 
+var webgl_canvas = document.getElementById("webgl-canvas")
+
 var canvas = document.createElement("canvas")
 var ctx = canvas.getContext("2d")
 canvas.style.background = "#000"
@@ -158,13 +160,13 @@ var animate = function() {
 				if (new_t > checkpoint.t + CHECKPOINT_INTERVAL + 1) {
 				// if (t >= checkpoint.t + 1 && new_t >= checkpoint.t + 1) {
 					simulate_to(new_t)
-					show_image = canvas
+					show_image = webgl_canvas
 				}else{
 					show_image = checkpoint.canvas
 				}
 			}
 		}else{
-			show_image = canvas
+			show_image = webgl_canvas
 		}
 		if (show_image) {
 			canvas.width = show_image.width
