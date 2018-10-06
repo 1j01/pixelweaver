@@ -44,8 +44,8 @@ var _whitelist = {
 	"Infinity": 1,
 	"JSON": 1,
 	"Math": 1,
-	"NaN": 1, // is this just in the unlikely case that "window.NaN" is defined?
-	"undefined": 1 // is this just in the unlikely case that "window.undefined" is defined?
+	"NaN": 1,
+	"undefined": 1,
 };
 
 Object.getOwnPropertyNames( _global ).forEach( function( prop ) {
